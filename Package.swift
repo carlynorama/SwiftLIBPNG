@@ -19,7 +19,7 @@ let package = Package(
         .systemLibrary(name: "png", pkgConfig: "libpng", providers: [.apt(["libpng-dev"]), .brew(["libpng"])]),
         .target(
             name: "SwiftLIBPNG",
-            dependencies: []),
+            dependencies: ["png"]),
         .testTarget(
             name: "SwiftLIBPNGTests",
             dependencies: ["SwiftLIBPNG"]),

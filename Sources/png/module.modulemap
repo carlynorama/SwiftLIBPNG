@@ -1,0 +1,4 @@
+module png [system] {
+    umbrella header "umbrella.h"
+    link "png"
+}
