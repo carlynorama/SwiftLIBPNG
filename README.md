@@ -46,7 +46,7 @@ Make sure to add the name to the library target's dependencies as well.
 
 #### Create a module.modulemap file
 
-If using the deprecated(?) system-module command this was created for you at the top level, but when using the library. This file is what really tells the compiler where to find the library. We have choices here, to make a regular header, a shim header, a bridging header, and umbrella header... I've gone with an umbrella header like the SwiftGD repo. 
+If using the deprecated(?) system-module command this was created for you at the top level, but when using the library. This file is what really tells the compiler where to find the library. We have choices here, to make a regular header, a shim header, a bridging header, or a umbrella header... I've gone with an umbrella header like the SwiftGD repo. 
 
 ```zsh
 cd Sources
@@ -65,7 +65,5 @@ module png {
 }
 ```
 
-`umbrella.h` contains the one line `#include <png.h>`, where png.h represents the name of the libraries header file in 
-
-
+`umbrella.h` contains the one line `#include <png.h>`
 
