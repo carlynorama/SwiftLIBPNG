@@ -38,6 +38,11 @@ swift package init --type library
 In this example the `name` is the same as the folder where modulemap lives, which the same as the libraries header file (without the .h)), which is the same as the module map link. This kept it easiest for me. 
 
 The `pkgConfig` name is optional. It can be found by (on a computer with pkg-config installed) with `pkg-config --list-all | grep $THING_TO_WRAP` or some fraction of the `$THING_TO_WRAP` name.
+
+`providers` is also optional
+
+Neither `pkgConfig` or `providers` will auto install dependencies, is my current understanding. 
+
 ```swift
 .systemLibrary(name: "png", pkgConfig: "libpng", providers: [.apt(["libpng-dev"]), .brew(["libpng"])]),
 ```
