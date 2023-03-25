@@ -9,14 +9,15 @@ import png
 
 public struct SwiftLIBPNG {
     public private(set) var text = "Hello, World!"
-
+    
     public init() {
     }
-
+    
     public static func version() {
-       let version = png_access_version_number()
-       print(version)
+        let version = png_access_version_number()
+        print(version)
     }
+}
     
 // Below is NOT correct. Complies but does not actually work. In progress.
 //
