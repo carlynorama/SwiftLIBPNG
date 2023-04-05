@@ -18,10 +18,10 @@ A lightweight wrapper around libpng done to learn the process.
 ### Learn about the library you want to wrap.
 
 ```zsh
-brew install $THING_TO_WRAP
+brew install $THING_TO_WRAP 
 # Intel Mac
 cd /usr/local/include/
-# M1
+# Apple Silicon
 cd /opt/homebrew/include
 ls -a 
 # look for header file of $THING_TO_WRAP so you know its name for later. 
