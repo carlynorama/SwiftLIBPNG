@@ -38,13 +38,13 @@ swift package init --type library
 
 #### Update Package.swift target's section to include a reference to the installed C system library
 
+<https://developer.apple.com/documentation/packagedescription/target/systemlibrary(name:path:pkgconfig:providers:)>
+
 In this example the `name` is the same as the folder where modulemap lives, which the same as the libraries header file (without the .h)), which is the same as the module map link. This kept it easiest for me. 
 
-The `pkgConfig` name is purportedly optional? It can be found by (on a computer with pkg-config installed) with `pkg-config --list-all | grep $THING_TO_WRAP` or some fraction of the `$THING_TO_WRAP` name. I was not able to get a library to compile without `pkg-config` installed and without this parameter set. 
+The `pkgConfig` parameter is an [optional](https://developer.apple.com/documentation/packagedescription/target/systemlibrary(name:path:pkgconfig:providers:)) setting, but it does appear to be required for libraries not really in the the System or in the CommandLineTools SDK. The name needed can be found by (on a computer with pkg-config installed) with `pkg-config --list-all | grep $THING_TO_WRAP` or some fraction of the `$THING_TO_WRAP` name. I was not able to get this package to compile without `pkg-config` installed and without this parameter set. My guess is that is because `libpng` is not a real System Library, nor in the CommandLineTools SDK.
 
-`providers` is definitely optional.
-
-Neither `pkgConfig` or `providers` will auto install dependencies at this time (2023 Apr). 
+`providers` is truly optional adding `providers` will NOT auto install dependencies at this time (2023 Apr). 
 
 ```swift
 .systemLibrary(name: "png", pkgConfig: "libpng", providers: [.apt(["libpng-dev"]), .brew(["libpng"])]),
