@@ -42,7 +42,7 @@ extension SwiftLIBPNG {
 
     }
 
-    public static func makeImage(with rowData:[[UInt8]], width:UInt32, height:UInt32) -> Data? {
+    public static func makeImage(with rowData:[UInt8], width:UInt32, height:UInt32) -> Data? {
         //user_png_ver version string of the library. Must be PNG_LIBPNG_VER_STRING
         //error_ptr user defined struct for error functions.
         //error_fn user defined function for printing errors and aborting.
