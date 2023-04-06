@@ -8,6 +8,8 @@
 import Foundation
 
 
+
+
 //The chunk type is possibly the most unusual feature. It is specified as a sequence of binary values, which just happen to correspond to the upper- and lowercase ASCII letters used on virtually every computer in the Western, non-mainframe world. Since it is far more convenient (and readable) to speak in terms of text characters than numerical sequences, the remainder of this book will adopt the convention of referring to chunks by their ASCII names. Programmers of EBCDIC-based computers should take note of this and remember to use only the numerical values corresponding to the ASCII characters.
 //
 //Chunk types (or names) are usually mnemonic, as in the case of the IHDR or image header chunk. In addition, however, each character in the name encodes a single bit of information that shows up in the capitalization of the character.[56] Thus IHDR and iHDR are two completely different chunk types, and a decoder that encounters an unrecognized chunk can nevertheless infer useful things about it. From left to right, the four extra bits are interpreted as follows:
