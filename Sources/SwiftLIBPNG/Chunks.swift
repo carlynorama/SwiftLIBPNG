@@ -58,3 +58,14 @@ extension FourCharCode: ExpressibleByStringLiteral {
     }
    
 }
+
+public extension UInt32 {
+    var string: String {
+        String([
+            Character(Unicode.Scalar(self >> 24 & 0xFF) ?? "?"),
+            Character(Unicode.Scalar(self >> 16 & 0xFF) ?? "?"),
+            Character(Unicode.Scalar(self >> 8 & 0xFF) ?? "?"),
+            Character(Unicode.Scalar(self & 0xFF) ?? "?")
+        ])
+    }
+}
