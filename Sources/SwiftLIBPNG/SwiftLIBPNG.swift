@@ -8,7 +8,7 @@ import Foundation
 import png
 
 public struct SwiftLIBPNG {
-    public private(set) var text = "Hello, World!"
+    static let typeHeaderArray:Data = Data([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])
     
     public init() {
     }
@@ -18,10 +18,6 @@ public struct SwiftLIBPNG {
         print(version)
     }
 }
-
-
-
-
     
  //Below is NOT correct. Complies but does not actually work. In progress.
 
