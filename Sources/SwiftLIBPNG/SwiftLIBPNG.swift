@@ -12,8 +12,7 @@ public struct SwiftLIBPNG {
     public static let pngFileSignature:[UInt8] = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]
     
     
-    public init() {
-    }
+    public init() {}
     
     public static func version() {
         let version = png_access_version_number()
