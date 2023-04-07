@@ -5,7 +5,6 @@
 //  Created by Carlyn Maw on 4/7/23.
 //
 
-import Foundation
 
 
 enum PNGError: Error, CustomStringConvertible {

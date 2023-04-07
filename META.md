@@ -1,12 +1,14 @@
 
-## Making A Wrapper
+# Making A External C Library Wrapper
 
-### References
+## References
 - [How to use C libraries in Swift?](https://theswiftdev.com/how-to-use-c-libraries-in-swift/)
 -  [How to wrap a C library in Swift](https://www.hackingwithswift.com/articles/87/how-to-wrap-a-c-library-in-swift), but also its more [up to date repo](https://github.com/twostraws/SwiftGD)
 - [Making a C library available in Swift using the Swift Package Manager](https://rderik.com/blog/making-a-c-library-available-in-swift-using-the-swift-package/)
 - <https://clang.llvm.org/docs/Modules.html>
 
+
+## Getting Started
 
 ### Learn about the library you want to wrap.
 
@@ -69,7 +71,7 @@ module png {
 `umbrella.h` contains the one line `#include <png.h>`
 
 
-### If XCode is having Trouble finding the library
+## If XCode is having Trouble finding the library
 
 #### What does compiling in the command line say?
 
@@ -109,3 +111,76 @@ If this command provides no output if it has already been run.
 
 To check the path: `echo $PATH` it should now contain `/opt/homebrew/bin:/opt/homebrew/sbin:`
 
+## Build Issues by Platform
+
+Have I gotten this library to compile for... 
+
+### Intel Mac
+
+Yes, totally fine with `pkg-config` installed.
+
+### Apple Silicon Mac
+
+Yes, totally fine with `pkg-config` installed.
+
+### iOS Simulator: No
+
+Not a high priority to fix. 
+
+```
+Building for iOS Simulator, but linking in dylib built for macOS, file '/usr/local/opt/libpng/lib/libpng16.dylib' for architecture x86_64
+```
+
+Options:
+
+- https://developer.apple.com/forums/thread/657913
+- https://stackoverflow.com/questions/63607158/xcode-building-for-ios-simulator-but-linking-in-an-object-file-built-for-ios-f
+- https://www.dynamsoft.com/barcode-reader/docs/mobile//programming/objectivec-swift/faq/arm64-simulator-error.html
+
+
+### iOS Hardware: No
+
+Not a high priority to fix. 
+
+```Linker command failed with exit code 1 (use -v to see invocation)```
+
+Related to above.
+
+### Fake Linux (Github Action) - Not yet
+
+Higer priority to fix. 
+
+Use action like one checking [APITizer](https://github.com/carlynorama/APItizer/actions)
+
+```yml
+name: Build Linux
+
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches:
+      - main
+      
+jobs:
+  build:
+    name: Build Linux
+    runs-on: ubuntu-latest
+    container:
+      image: swift:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Build Linux framework
+        run: |
+           swift build
+           swift test
+      - name: Build Linux Demo
+        run: |
+            cd Demo/Demo\ Ubuntu
+            swift build
+```
+
+This one fails. So 
+- TODO: figure out how to make one that works. (suspect base container does not have pkg-config)

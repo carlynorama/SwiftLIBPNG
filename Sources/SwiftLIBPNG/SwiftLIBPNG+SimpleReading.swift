@@ -4,8 +4,12 @@
 //
 //  Created by Carlyn Maw on 4/6/23.
 //
+#if os(Linux)
+import Glibc
+#else
+import Darwin
+#endif
 
-import Foundation
 import png
 
 //http://www.libpng.org/pub/png/libpng-manual.txt
@@ -17,8 +21,8 @@ import png
 extension SwiftLIBPNG {
 
     //TODO: This code (is expected to) hard crash if the file is not a PNG. See `Why no setjmp??` note
-    public func simpleFileRead(from url:URL) throws {
-        let file_ptr = fopen(url.relativePath, "r")
+    public static func simpleFileRead(from path:String) throws {
+        let file_ptr = fopen(path, "r")
         if file_ptr == nil {
             throw PNGError("File pointer not available")
         }
