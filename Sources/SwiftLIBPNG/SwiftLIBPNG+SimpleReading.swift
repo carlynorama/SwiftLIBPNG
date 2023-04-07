@@ -9,6 +9,7 @@ import Foundation
 import png
 
 //http://www.libpng.org/pub/png/libpng-manual.txt
+// Text with //DOC: prefix is from the documentation above.
 
 //DOC: The struct at which png_ptr points is used internally by libpng to keep track of the current state of the PNG image at any given moment; info_ptr is used to indicate what its state will be after all of the user-requested transformations are performed. One can also allocate a second information struct, usually referenced via an end_ptr variable; this can be used to hold all of the PNG chunk information that comes after the image data, in case it is important to keep pre- and post-IDAT information separate (as in an image editor, which should preserve as much of the existing PNG structure as possible). For this application, we don't care where the chunk information comes from, so we will forego the end_ptr information struct and direct everything to info_ptr.
 
@@ -52,9 +53,9 @@ extension SwiftLIBPNG {
         
         //Search for "Setjmp/longjmp issues"
         //https://github.com/glennrp/libpng/blob/12222e6fbdc90523be77633ed430144cfee22772/INSTALL
-        //IF you set your compiler flags to allow this feature I believe png_set_longjmp_fn is the new way to set this function.
+        //IF you set your compiler flags to allow this feature, I believe png_set_longjmp_fn is the new way to set this function.
         
-        //In the mean time your code should make sure to verify that the file path does indeed point to a PNG file.
+        //In the mean time your code should make sure to verify that the file path does indeed point to a PNG file before calling this function.
         
         //set destination pointer and file source pointer
         //C:-- png_init_io(png_ptr: png_structrp!, fp: png_FILE_p!)
@@ -77,9 +78,9 @@ extension SwiftLIBPNG {
         
         
         //Optional: Set a row-completion handler
-        //pointer is the png_ptr
-        //row is the NEXT row number
-        //pass is always 0 in non interlaced pngs
+        //`pointer` is the png_ptr
+        //`row` is the NEXT row number
+        //`pass` is always 0 in non interlaced pngs, but also refers to the NEXT row's pass count.
         let rowCompleteCallback:@convention(c) (OpaquePointer?, UInt32, Int32) -> () = { png_ptr, row, pass in
             print(png_ptr ?? "nil", row, pass)
         }
@@ -90,18 +91,24 @@ extension SwiftLIBPNG {
         //No example code provided.
         
         
-        //This is a SIMPLE read. Assumes the entire file can be 
-        //See documentaion full set of masks that can be applied
+        //This is a SIMPLE read. Assumes
+        //- the entire file can be _all_ loaded into memory, all at once
+        //- that this can be done before any header info needed
+        //- don't want to malloc your own row storage
+        //- don't need to do successive transforms on the data at read in
+        //- any transform you want to do has PNG_TRANSFORM_ define
+        
+        //Set what transforms desired. If any
         //TODO: Bit print out of masks.
-        let png_transforms = PNG_TRANSFORM_IDENTITY //| PNG_TRANSFORM_SWAP_ALPHA
+        let png_transforms = PNG_TRANSFORM_IDENTITY //No transforms
+        
         //DOC: This call is equivalent to png_read_info(), followed the set of transformations indicated by the transform mask, then png_read_image(), and finally png_read_end().
         png_read_png(png_ptr, info_ptr, png_transforms, nil)
         
-        //DOC:If you don't allocate row_pointers ahead of time, png_read_png() will do it, and it'll be free'ed by libpng when you call png_destroy_*().
+        //DOC: If you don't allocate row_pointers ahead of time, png_read_png() will do it, and it'll be free'ed by libpng when you call png_destroy_*().
         let row_pointers = png_get_rows(png_ptr, info_ptr)
-        //If you allocated your row_pointers in a single block, as suggested above in the description of the high level read interface, you must not transfer responsibility for freeing it to the png_set_rows or png_read_destroy function, because they would also try to free the individual row_pointers[i].
         
-        //TODO: What happens to end info make sure is in info_ptr
+        //TODO: What happens to end info if no end_info make sure is in info_ptr.
         
         print(png_get_image_width(png_ptr,
                                   info_ptr))
@@ -110,7 +117,7 @@ extension SwiftLIBPNG {
                                   info_ptr))
         
         
-        //if set endinfo do that too
+        //if set end_info nuke that too. DO NOT free row_pointers since used `png_get_rows`
         if png_ptr != nil {
             if info_ptr != nil {
                 png_destroy_read_struct(&png_ptr, &info_ptr, nil);
@@ -123,8 +130,6 @@ extension SwiftLIBPNG {
         
         
     }
-    
-    //When this function is called the row has already been completely processed and the 'row' and 'pass' refer to the next row to be handled.  For the non-interlaced case the row that was just handled is simply one less than the passed in row number, and pass will always be 0.
 
 
     
