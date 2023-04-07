@@ -42,6 +42,7 @@ public struct SwiftLIBPNG {
         return png_sig_cmp(bytePointer, start, 8) == 0
         
     }
+    
 }
 
 
