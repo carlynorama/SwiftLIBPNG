@@ -83,7 +83,7 @@ swift build --verbose
 
 `brew install pkg-config`
 
-### Homebrew path correct?
+#### Homebrew path correct?
 
 When installing homebrew did you update the path? Especially important on M1 macs where the install path has changed to `/opt/homebrew/` from `/usr/local/include/`. 
 
