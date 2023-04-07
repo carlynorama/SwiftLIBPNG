@@ -11,10 +11,7 @@ let package = Package(
             name: "SwiftLIBPNG",
             targets: ["SwiftLIBPNG"]),
     ],
-    dependencies: [
-        // Dependencies declare other packages that this package depends on.
-        // .package(url: /* package url */, from: "1.0.0"),
-    ],
+    dependencies: [],
     targets: [
         .systemLibrary(name: "png", pkgConfig: "libpng", providers: [.apt(["libpng-dev"]), .brew(["libpng"])]),
         .target(
