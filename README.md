@@ -6,7 +6,7 @@ So far, it compiles fine for MacOS 13+ (Swift 5.7, Xcode 14) using both Intel an
 
 ## Alternatives of Note
 
-If using a libpng library to avoid Apple-Hardware dependencies, consider a Package that is all Swift, no C, no Foundation. As of 2023 APR these two had fairly recent activity. 
+If using a libpng library to avoid Apple-Hardware dependencies, also consider a Package that is all Swift, no C, no Foundation? As of 2023 APR these two had fairly recent activity. 
 
 - https://github.com/tayloraswift/swift-png
 - https://swiftpackageindex.com/rbruinier/SwiftMicroPNG
@@ -15,10 +15,15 @@ If using a libpng library to avoid Apple-Hardware dependencies, consider a Packa
 
 ### About libpng
 
-- <http://www.libpng.org>
-- <http://www.libpng.org/pub/png/book/>
-- more up to date than /book/ -> <http://www.libpng.org/pub/png/libpng-manual.txt> 
-- had information that I did not find in manual. Actually has code post v1.6 -><https://github.com/glennrp/libpng/blob/12222e6fbdc90523be77633ed430144cfee22772/INSTALL> 
+Although some people will tell you that PNG stands for Portable Network Graphic, that is not the original meaning. The recursive pun "PNG Not Gif" is how it started. The official documentation is riddled with the same humor and very deep knowledge about how computers, color and people work. Still worth a read. 
+
+- The main site: <http://www.libpng.org>
+- How PNGs work. Code is out of date but still very much a good read: <http://www.libpng.org/pub/png/book/> 
+- More up to date than /book/ but still seems to lag :<http://www.libpng.org/pub/png/libpng-manual.txt> 
+- Had information that I did not find in manual. Actually has code post v1.6 -><https://github.com/glennrp/libpng/blob/12222e6fbdc90523be77633ed430144cfee22772/INSTALL> 
+
+- 'just the spec ma'am' - https://www.w3.org/TR/2003/REC-PNG-20031110/
+- zlib spec for analyzing IDAT https://www.zlib.net/manual.html
 
 ### Inspecting Data
 
@@ -47,3 +52,11 @@ Very handy PNG verifier: <https://www.nayuki.io/page/png-file-chunk-inspector>
 ```
 
 - TODO: Case of the disappearing setjmp(png_jmpbuf(png_ptr))
+
+- TODO: filter types
+http://www.libpng.org/pub/png/book/chapter09.html
+ None     Each byte is unchanged.
+ Sub     Each byte is replaced with the difference between it and the ``corresponding byte'' to its left.
+ Up     Each byte is replaced with the difference between it and the byte above it (in the previous row, as it was before filtering).
+ Average     Each byte is replaced with the difference between it and the average of the corresponding bytes to its left and above it, truncating any fractional part.
+ Paeth     Each byte is replaced with the difference between it and the Paeth predictor of the corresponding bytes to its left, above it, and to its upper left.
