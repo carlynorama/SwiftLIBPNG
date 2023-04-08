@@ -85,6 +85,8 @@ extension SwiftLIBPNG {
         }
         
         //Set compression schemes. Don't call to leave as the default. libpng optimizes for a good balance between writing speed and resulting file compression.
+        //NOTE: If you need the data "as is" you'll need to look into this because that is not the default scheme.
+        //http://www.libpng.org/pub/png/book/chapter09.html
         //C:--png_set_filter(png_ptr:png_structrp!, method: Int32, filters: Int32)
         
         
