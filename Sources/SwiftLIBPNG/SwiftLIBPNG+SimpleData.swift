@@ -17,24 +17,12 @@ import png
 extension SwiftLIBPNG {
     
     //NOT using "libpng simplified API"
-    public static func buildSimpleDataExample() throws -> Data {
-        let width:UInt32 = 5
-        let height:UInt32 = 3
+    //takes a width, height and pixel data in RR GG BB AA byte order
+    public static func buildSimpleDataExample(width:UInt32, height:UInt32, pixelData:[UInt8]) throws -> Data {
+        var pixelsCopy = pixelData //TODO: This or inout? OR... is there away around need for MutableCopy?
         let bitDepth:UInt8 = 8 // (1 byte, values 1, 2, 4, 8, or 16) (has to be 8 or 16 for RGBA)
         let colorType = PNG_COLOR_TYPE_RGBA //UInt8(6), (1 byte, values 0, 2, 3, 4, or 6) (6 == red, green, blue and alpha)
-        
-        var pixelData:[UInt8] = []
-        
-        for _ in 0..<height {
-            for _ in 0..<width {
-                pixelData.append(0x77)
-                pixelData.append(0x00)
-                pixelData.append(UInt8.random(in: 0...UInt8.max))
-                pixelData.append(0xFF)
-            }
-        }
-        
-        
+
         
         var pngIOBuffer = Data()//:[UInt8] = [] // Data() //
         
@@ -119,28 +107,21 @@ extension SwiftLIBPNG {
         //png_set_rows()
 
         
-        pixelData.withUnsafeMutableBufferPointer{ pd_pointer in
+        pixelsCopy.withUnsafeMutableBufferPointer{ pd_pointer in
             let nilPointer:Optional<UnsafeMutablePointer<UInt8>> = nil
             var row_pointers = Array(repeating: nilPointer, count: Int(height))
-            print(pd_pointer.baseAddress)
             for rowIndex in 0..<height {
                 let rowStart = rowIndex * width * 4
                 row_pointers[Int(rowIndex)] = (pd_pointer.baseAddress! + Int(rowStart))
             }
-            print(row_pointers)
-            //png_set_rows(T##png_ptr: png_const_structrp!##png_const_structrp!, T##info_ptr: png_inforp!##png_inforp!, T##row_pointers: png_bytepp!##png_bytepp!)
+
+            //png_set_rows(png_ptr: png_const_structrp!, info_ptr: png_inforp!, row_pointers: png_bytepp!)
             png_set_rows(png_ptr, info_ptr, &row_pointers)
+            
+            //high level write.
+            //TODO: Confirm theory has to be inside so row pointers still valid.
             png_write_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, nil)
         }
-
-        
-
-        
-        
-        //-------------------------------------------------------------  WRITE
-        //Basic high level write.
-        
-        
     
 
         
