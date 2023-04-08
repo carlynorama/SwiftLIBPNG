@@ -8,8 +8,8 @@ So far, it compiles fine for MacOS 13+ (Swift 5.7, Xcode 14) using both Intel an
 
 If using a libpng library to avoid Apple-Hardware dependencies, also consider a Package that is all Swift, no C, no Foundation? As of 2023 APR these two had fairly recent activity. 
 
-- https://github.com/tayloraswift/swift-png
-- https://swiftpackageindex.com/rbruinier/SwiftMicroPNG
+- <https://github.com/tayloraswift/swift-png>
+- <https://swiftpackageindex.com/rbruinier/SwiftMicroPNG>
 
 ## Resources
 
@@ -22,8 +22,8 @@ Although some people will tell you that PNG stands for Portable Network Graphic,
 - More up to date than /book/ but still seems to lag :<http://www.libpng.org/pub/png/libpng-manual.txt> 
 - Had information that I did not find in manual. Actually has code post v1.6 -><https://github.com/glennrp/libpng/blob/12222e6fbdc90523be77633ed430144cfee22772/INSTALL> 
 
-- 'just the spec ma'am' - https://www.w3.org/TR/2003/REC-PNG-20031110/
-- zlib spec for analyzing IDAT https://www.zlib.net/manual.html
+- 'just the spec ma'am' - <https://www.w3.org/TR/2003/REC-PNG-20031110/>, <https://w3c.github.io/PNG-spec/>
+- zlib spec for analyzing IDAT <https://www.zlib.net/manual.html>
 
 ### Inspecting Data
 
@@ -40,6 +40,9 @@ Very handy PNG verifier: <https://www.nayuki.io/page/png-file-chunk-inspector>
 ## Notes
 
 - TODO: Write comparison of approaches
+
+//DOC: The struct at which png_ptr points is used internally by libpng to keep track of the current state of the PNG image at any given moment; info_ptr is used to indicate what its state will be after all of the user-requested transformations are performed. One can also allocate a second information struct, usually referenced via an end_ptr variable; this can be used to hold all of the PNG chunk information that comes after the image data, in case it is important to keep pre- and post-IDAT information separate (as in an image editor, which should preserve as much of the existing PNG structure as possible). For this application, we don't care where the chunk information comes from, so we will forego the end_ptr information struct and direct everything to info_ptr.
+
 
 ```c
     png_structp png_ptr = png_create_write_struct

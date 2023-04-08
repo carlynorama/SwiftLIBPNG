@@ -15,14 +15,11 @@ import png
 //http://www.libpng.org/pub/png/libpng-manual.txt
 // Text with //DOC: prefix is from the documentation above.
 
-//DOC: The struct at which png_ptr points is used internally by libpng to keep track of the current state of the PNG image at any given moment; info_ptr is used to indicate what its state will be after all of the user-requested transformations are performed. One can also allocate a second information struct, usually referenced via an end_ptr variable; this can be used to hold all of the PNG chunk information that comes after the image data, in case it is important to keep pre- and post-IDAT information separate (as in an image editor, which should preserve as much of the existing PNG structure as possible). For this application, we don't care where the chunk information comes from, so we will forego the end_ptr information struct and direct everything to info_ptr.
-
-
 extension SwiftLIBPNG {
-
+    
     //TODO: This code (is expected to) hard crash if the file is not a PNG. See `Why no setjmp??` note
     //NOT using "libpng simplified API"
-    public static func simpleFileRead(from path:String) throws {
+    public static func simpleFileRead(from path:String) throws -> [UInt8] {
         let file_ptr = fopen(path, "r")
         if file_ptr == nil {
             throw PNGError("File pointer not available")
@@ -32,13 +29,13 @@ extension SwiftLIBPNG {
         //Using this function tells libpng to expect to handle memory management, but `png_destroy_read_struct` will still need to be called.
         //takes the version string define, and some pointers that will override rides to default error handling that are not used in this simple case.
         /*C:-- png_create_read_struct(
-            user_png_ver: png_const_charp!,
-            error_ptr: png_voidp!,
-            error_fn: png_error_ptr! (png_structp?, png_const_charp?) -> Void,
-            warn_fn: png_error_ptr!  (png_structp?, png_const_charp?) -> Void)
+         user_png_ver: png_const_charp!,
+         error_ptr: png_voidp!,
+         error_fn: png_error_ptr! (png_structp?, png_const_charp?) -> Void,
+         warn_fn: png_error_ptr!  (png_structp?, png_const_charp?) -> Void)
          */
         var png_ptr:OpaquePointer? = png_create_read_struct(PNG_LIBPNG_VER_STRING, nil, nil,
-                                         nil);
+                                                            nil);
         if (png_ptr == nil) { throw PNGError.outOfMemory }
         
         //Makes the pointer to handle information about how the underlying PNG data needs to be manipulated.
@@ -68,9 +65,9 @@ extension SwiftLIBPNG {
         
         //If you don't want to use fileio , can instead
         /*C:-- png_set_read_fn(
-             png_ptr: png_structrp!,
-             io_ptr: png_voidp!,
-             read_data_fn: png_rw_ptr! (png_structp?, png_bytep?, Int) -> Void)
+         png_ptr: png_structrp!,
+         io_ptr: png_voidp!,
+         read_data_fn: png_rw_ptr! (png_structp?, png_bytep?, Int) -> Void)
          */
         //TODO:(see write for example)
         
@@ -117,11 +114,32 @@ extension SwiftLIBPNG {
         
         //TODO: What happens to end info if no end_info make sure is in info_ptr.
         
-        print(png_get_image_width(png_ptr,
-                                  info_ptr))
-
-        print(png_get_image_height(png_ptr,
-                                  info_ptr))
+        let width = png_get_image_width(png_ptr,info_ptr)
+        let height = png_get_image_height(png_ptr,info_ptr)
+        let color_type_code = png_get_color_type(png_ptr, info_ptr)
+        let bit_depth = png_get_bit_depth(png_ptr, info_ptr)
+        let channel_count = png_get_channels(png_ptr, info_ptr)
+        let row_byte_width = png_get_rowbytes(png_ptr, info_ptr)
+        
+        print("""
+                width: \(width),
+                height: \(height),
+                colorType: \(color_type_code),
+                bitDepth: \(bit_depth),
+                channelCount: \(channel_count),
+                rowByteWidth: \(row_byte_width)
+        """)
+        //let pixel_width = channelCountFor(colorTypeCode: color_type_code) * UInt32(bit_depth)
+        
+        var imagePixels:[UInt8] = []
+        let imageRows = UnsafeBufferPointer(start: row_pointers, count: Int(height))
+        
+        for rowPointer in imageRows {
+            
+            let rowBufferPtr = UnsafeBufferPointer(start: rowPointer, count: row_byte_width)
+            imagePixels.append(contentsOf: rowBufferPtr)
+        }
+        
         
         
         //-----------------------------------------------------   FUNCTION EXIT
@@ -139,11 +157,13 @@ extension SwiftLIBPNG {
         fclose(file_ptr)
         //---------------------------------------------------------------------
         
+        return imagePixels
+        
     }
-
-
     
-
+    
+    
+    
 }
 
 

@@ -15,6 +15,36 @@ import Foundation
 import png
 
 extension SwiftLIBPNG {
+// EXAMPLE USAGE
+//    func writeImage() {
+//        let width = 5
+//        let height = 3
+//        var pixelData:[UInt8] = []
+//
+//        for _ in 0..<height {
+//            for _ in 0..<width {
+//                pixelData.append(0x77)
+//                pixelData.append(0x00)
+//                pixelData.append(UInt8.random(in: 0...UInt8.max))
+//                pixelData.append(0xFF)
+//            }
+//        }
+//
+//        let data = try? SwiftLIBPNG.buildSimpleDataExample(width: 5, height: 3, pixelData: pixelData)
+//        if let data {
+//            for item in data {
+//                print(String(format: "0x%02x", item), terminator: "\t")
+//            }
+//            print()
+//
+//            let locationToWrite = URL.documentsDirectory.appendingPathComponent("testImage", conformingTo: .png)
+//            do {
+//                try data.write(to: locationToWrite)
+//            } catch {
+//                print(error.self)
+//            }
+//        }
+//    }
     
     //NOT using "libpng simplified API"
     //takes a width, height and pixel data in RR GG BB AA byte order
