@@ -182,5 +182,6 @@ jobs:
             swift build
 ```
 
-This one fails. So 
-- TODO: figure out how to make one that works. (suspect base container does not have pkg-config)
+This one fails with `warning: you may be able to install libpng using your system-packager:apt-get install libpng-dev`
+- TODO: figure out how to make one that works. (may also have to install pkg-config)
+

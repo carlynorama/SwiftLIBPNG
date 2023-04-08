@@ -47,10 +47,12 @@ public struct SwiftLIBPNG {
     
     //MARK: Global Callback Defs
     
-//    //example row completion callback.
-//    let rowCompleteCallback:@convention(c) (OpaquePointer?, UInt32, Int32) -> () = {png_ptr, row, pass in
-//        print(png_ptr ?? "nil", row, pass)
-//    }
+    //example row completion callback if an inline closure is not appropriate. Since stored variables are not allowed in extensions these will need to be here.
+    
+    //`Attribute @convention(c)` can only be applied to types, not declarations
+    //    let rowCompleteCallback:@convention(c) (OpaquePointer?, UInt32, Int32) -> () = {png_ptr, row, pass in
+    //        print(png_ptr ?? "nil", row, pass)
+    //    }
     
 }
 

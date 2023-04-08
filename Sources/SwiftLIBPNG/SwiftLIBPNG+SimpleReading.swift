@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  SwiftLIBPNG+SimpleReading.swift
 //  
 //
 //  Created by Carlyn Maw on 4/6/23.
@@ -21,6 +21,7 @@ import png
 extension SwiftLIBPNG {
 
     //TODO: This code (is expected to) hard crash if the file is not a PNG. See `Why no setjmp??` note
+    //NOT using "libpng simplified API"
     public static func simpleFileRead(from path:String) throws {
         let file_ptr = fopen(path, "r")
         if file_ptr == nil {
@@ -80,6 +81,8 @@ extension SwiftLIBPNG {
         //Optional: One can also decide how to handle CRC errors (possible bad chunks. )
         //png_set_crc_action(png_ptr, crit_action, ancil_action);
         
+        //Other Options: Setting size limits, how to handle chunks that are not defined by the spec
+        
         
         //Optional: Set a row-completion handler
         //`pointer` is the png_ptr
@@ -121,6 +124,7 @@ extension SwiftLIBPNG {
                                   info_ptr))
         
         
+        //-----------------------------------------------------   FUNCTION EXIT
         //if set end_info nuke that too. DO NOT free row_pointers since used `png_get_rows`
         if png_ptr != nil {
             if info_ptr != nil {
@@ -132,6 +136,8 @@ extension SwiftLIBPNG {
         png_ptr = nil
         info_ptr = nil
         
+        fclose(file_ptr)
+        //---------------------------------------------------------------------
         
     }
 
