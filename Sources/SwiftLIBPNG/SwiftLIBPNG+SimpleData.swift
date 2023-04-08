@@ -91,9 +91,6 @@ extension SwiftLIBPNG {
         //C:--png_set_filter(png_ptr:png_structrp!, method: Int32, filters: Int32)
         
         
-        
-        
-        
         //---------------------------------------------------------------- IHDR
         png_set_IHDR(png_ptr, info_ptr, width, height,
                Int32(bitDepth), colorType,
@@ -135,11 +132,9 @@ extension SwiftLIBPNG {
                 png_destroy_write_struct(&png_ptr, nil);
             }
         }
-        png_ptr = nil 
+        png_ptr = nil
         info_ptr = nil
         //---------------------------------------------------------------------
-    
-
         
         return pngIOBuffer
     }

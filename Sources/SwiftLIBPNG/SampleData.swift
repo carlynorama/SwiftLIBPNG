@@ -57,7 +57,7 @@ extension SwiftLIBPNG {
                                        0x00, 0x00, 0x00, 0x1f, //size of IDAT - 31
                                        0x49, 0x44, 0x41, 0x54, //"IDAT"
                                                    0x08, 0x1d, //zlib Header
-                                                         0x01, //?? BFINAL = 1, BTYPE = 00 ?
+                                                         0x01, //BFINAL = 1, BTYPE = 00  This is the last (only)chunk, yes. 
                                        0x14, 0x00, 0xeb, 0xff, //LEN & NLEN of data  (Length of data -> 20 (3*3 + 2))
                                        
                                                          0x00, //row filter filter type (none/no change)
