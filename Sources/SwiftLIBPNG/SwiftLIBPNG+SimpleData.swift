@@ -156,16 +156,8 @@ extension SwiftLIBPNG {
             png_write_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, nil)
         }
         
-        //--------------------------------------------------   FUNCTION CLEANUP
-        if png_ptr != nil {
-            if info_ptr != nil {
-                png_destroy_write_struct(&png_ptr, &info_ptr);
-            } else {
-                png_destroy_write_struct(&png_ptr, nil);
-            }
-        }
-        png_ptr = nil
-        info_ptr = nil
+        //--------------------------------------------------------   PNG CLEANUP
+        png_destroy_write_struct(&png_ptr, &info_ptr);
         //---------------------------------------------------------------------
         
         return pngIOBuffer

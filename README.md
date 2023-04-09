@@ -39,20 +39,37 @@ Very handy PNG verifier: <https://www.nayuki.io/page/png-file-chunk-inspector>
 
 ## Notes
 
-- TODO: Write comparison of approaches
+### Managing the pointers
 
-//DOC: The struct at which png_ptr points is used internally by libpng to keep track of the current state of the PNG image at any given moment; info_ptr is used to indicate what its state will be after all of the user-requested transformations are performed. One can also allocate a second information struct, usually referenced via an end_ptr variable; this can be used to hold all of the PNG chunk information that comes after the image data, in case it is important to keep pre- and post-IDAT information separate (as in an image editor, which should preserve as much of the existing PNG structure as possible). For this application, we don't care where the chunk information comes from, so we will forego the end_ptr information struct and direct everything to info_ptr.
+To use `libpng` to read or write the first step is to allocate memory for structs libpng will use to store information about the png and its settings. 
 
+From the documentation (on how to read, but a png_ptr and info_ptr are used for both reading a writing):
+
+>The struct at which png_ptr points is used internally by libpng to keep track of the current state of the PNG image at any given moment; info_ptr is used to indicate what its state will be after all of the user-requested transformations are performed. One can also allocate a second information struct, usually referenced via an end_ptr variable; this can be used to hold all of the PNG chunk information that comes after the image data, in case it is important to keep pre- and post-IDAT information separate (as in an image editor, which should preserve as much of the existing PNG structure as possible). For this application, we don't care where the chunk information comes from, so we will forego the end_ptr information struct and direct everything to info_ptr.
+
+The functions libpng provides for this come in two flavors, ones that return pointers and ones that take them and their handling functions in: 
 
 ```c
-    png_structp png_ptr = png_create_write_struct
-       (PNG_LIBPNG_VER_STRING, (png_voidp)user_error_ptr,
-        user_error_fn, user_warning_fn);
-    png_structp png_ptr = png_create_write_struct_2
-       (PNG_LIBPNG_VER_STRING, (png_voidp)user_error_ptr,
-        user_error_fn, user_warning_fn, (png_voidp)
-        user_mem_ptr, user_malloc_fn, user_free_fn);
+    png_structp png_ptr = png_create_write_struct(
+        PNG_LIBPNG_VER_STRING,
+        (png_voidp)user_error_ptr, 
+        user_error_fn, 
+        user_warning_fn
+    );
+    png_structp png_ptr = png_create_write_struct_2(
+        PNG_LIBPNG_VER_STRING, 
+            (png_voidp)user_error_ptr,
+            user_error_fn, 
+            user_warning_fn, 
+            (png_voidp)
+            user_mem_ptr, 
+            user_malloc_fn, 
+            user_free_fn
+    );
 ```
+
+Both styles of struct creation still require a call to `png_destroy_write_structs` functions on wrap up. 
+
 
 - TODO: Case of the disappearing setjmp(png_jmpbuf(png_ptr))
 
