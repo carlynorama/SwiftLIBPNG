@@ -63,3 +63,63 @@ http://www.libpng.org/pub/png/book/chapter09.html
  Up     Each byte is replaced with the difference between it and the byte above it (in the previous row, as it was before filtering).
  Average     Each byte is replaced with the difference between it and the average of the corresponding bytes to its left and above it, truncating any fractional part.
  Paeth     Each byte is replaced with the difference between it and the Paeth predictor of the corresponding bytes to its left, above it, and to its upper left.
+
+### Why does the writing example use Data instead of [UInt8]?
+
+When trying to write cross-platform code, I tend to try to use the lowest level type as much as possible to move information around. In this case using a `[UInt8]` over a `Data` would cost so much additional overhead, it's not currently worth the hassle. 
+
+The `UnsafeMutableRawPointer` pointer returned from `png_get_io_ptr` always points to the data structure's head, whether a file or Data, or something else, not to a cursor location where new Data should be written to. If the `buildSimpleDataExample` function and it's `writeDataCallback` callback were embedded in a class, then one could potentially make a class variable that holds "whats my IO curser offset?" information for the callback function to refer to. 
+
+But `buildSimpleDataExample` is not in a class or even a struct instance! So what is a lone little static function to do? 
+
+The good news is that `Data` is magic. `Data` (unlike say `[UInt8]`) has [private size variables allocated with it](https://github.com/apple/swift-corelibs-foundation/blob/eec4b26deee34edb7664ddd9c1222492a399d122/Sources/Foundation/Data.swift). This means it can implement `func append(_ bytes: UnsafeRawPointer, length: Int)`
+
+```swift
+    @inlinable // This is @inlinable as it does not escape the _DataStorage boundary layer.
+    func append(_ bytes: UnsafeRawPointer, length: Int) {
+        precondition(length >= 0, "Length of appending bytes must not be negative")
+        let origLength = _length
+        let newLength = origLength + length
+        if _capacity < newLength || _bytes == nil {
+            ensureUniqueBufferReference(growingTo: newLength, clear: false)
+        }
+        _length = newLength
+        __DataStorage.move(_bytes!.advanced(by: origLength), bytes, length)
+    }
+```
+
+The existence of this function means we can append when all we have is a pointer. It's amazing. 
+
+The [example C code](https://stackoverflow.com/questions/1821806/how-to-encode-png-to-buffer-using-libpng)  floating around the internet for writing to a buffer is:
+
+```c
+//Make a new compound type that stores the pointer and the cursor location/size
+struct mem_encode
+{
+  char *buffer;
+  size_t size;
+}
+void my_png_write_data(png_structp png_ptr, png_bytep data, png_size_t length)
+{
+  /* with libpng15 next line causes pointer deference error; use libpng12 */
+  struct mem_encode* p=(struct mem_encode*)png_get_io_ptr(png_ptr); /* was png_ptr->io_ptr */
+  size_t nsize = p->size + length;
+
+  /* allocate or grow buffer */
+  if(p->buffer)
+    p->buffer = realloc(p->buffer, nsize);
+  else
+    p->buffer = malloc(nsize);
+
+  if(!p->buffer)
+    png_error(png_ptr, "Write Error");
+
+  /* copy new bytes to end of buffer */
+  memcpy(p->buffer + p->size, data, length);
+  p->size += length;
+}
+```
+
+Where you can see that it is implementing by hand that buffer tracking (`mem_encode`) and the buffer expansion by hand.
+
+Thankfully using `Data` appears to make all of that unnecessary.  
