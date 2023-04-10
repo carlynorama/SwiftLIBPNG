@@ -14,6 +14,7 @@ import Foundation
 
 import png
 
+
 extension SwiftLIBPNG {
     // EXAMPLE USAGE
     //    func writeImage() {
@@ -50,7 +51,10 @@ extension SwiftLIBPNG {
     //takes a width, height and pixel data in RR GG BB AA byte order
     public static func buildSimpleDataExample(width:UInt32, height:UInt32, pixelData:[UInt8]) throws -> Data {
         var pixelsCopy = pixelData //TODO: This or inout? OR... is there away around need for MutableCopy?
-        let bitDepth:UInt8 = 1 // (1 byte, values 1, 2, 4, 8, or 16) (has to be 8 or 16 for RGBA)
+        
+        //-----------------------------  INTENTIONAL ERROR
+        let bitDepth:UInt8 = 1 //should be 8 (1 byte, values 1, 2, 4, 8, or 16) (has to be 8 or 16 for RGBA)
+        //-----------------------------  END INTENTIONAL ERROR
         let colorType = PNG_COLOR_TYPE_RGBA //UInt8(6), (1 byte, values 0, 2, 3, 4, or 6) (6 == red, green, blue and alpha)
         
         
@@ -127,7 +131,7 @@ extension SwiftLIBPNG {
         //https://www.ietf.org/rfc/rfc1951.txt
         //C:--png_set_filter(png_ptr:png_structrp!, method: Int32, filters: Int32)
         
-        
+        //-------------------- WHERE INTENTIONAL ERROR HAPPENS
         //---------------------------------------------------------------- IHDR
         png_set_IHDR(png_ptr, info_ptr, width, height,
                      Int32(bitDepth), colorType,
