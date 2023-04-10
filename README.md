@@ -138,7 +138,7 @@ If your callback nopes out with an `exit` or `abort`, this "Quitting behavior" w
 
 the `buildSimpleDataExample` calls a working, but not super useful, callback example.
 
-### Why in my PNG file do I not see the pixel data I'm expecting?
+### Why doesn't the IDAT look like the pixels that were passed in/out of libpng?
 
 - TODO: write about filter types
 http://www.libpng.org/pub/png/book/chapter09.html
