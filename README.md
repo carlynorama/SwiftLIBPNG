@@ -136,7 +136,7 @@ If the user will just leave the program at this point missing a dealloc may not 
     
 If your callback nopes out with an `exit` or `abort`, this "Quitting behavior" will prevent being accepted into the app store. That's also no better than libpng default, so almost might as well have left it nil.
 
-I have a working, but not super useful, callback example with 
+the `buildSimpleDataExample` calls a working, but not super useful, callback example.
 
 ### Why in my PNG file do I not see the pixel data I'm expecting?
 
