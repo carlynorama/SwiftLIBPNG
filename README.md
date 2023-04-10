@@ -94,7 +94,11 @@ For more information on libpng and setjmp/longjmp:
 
 For more on setjmp/longjmp in general:
 - https://en.wikipedia.org/wiki/Setjmp.h
+- https://web.eecs.utk.edu/~huangj/cs360/360/notes/Setjmp/lecture.html
 - https://stackoverflow.com/questions/1692814/exception-handling-in-c-what-is-the-use-of-setjmp-returning-0
+- https://stackoverflow.com/questions/14685406/practical-usage-of-setjmp-and-longjmp-in-c
+- https://stackoverflow.com/questions/7334595/longjmp-out-of-signal-handler
+- https://tratt.net/laurie/blog/2005/timing_setjmp_and_the_joy_of_standards.html
 
 That said, to side step all of that (while still getting more graceful failing behavior?) the choices appear to be 
 -  Using those aforementioned "Simplified libpng API" (No examples of that in this repo) 
@@ -116,25 +120,23 @@ From the manual, the warning functions passes to `png_create_*_struct` should be
     png_voidp error_ptr = png_get_error_ptr(png_ptr);
 ```
 
+After initialization `png_set_error_fn` can be used after struct init to update what error function should be used.
+
+For an idea of the type of strings the `error_fn` and `warning_fn` try browsing the results of a [search for png_error](https://github.com/glennrp/libpng/search?q=png_error&type=code) or [png_warning](https://github.com/glennrp/libpng/search?q=png_warning&type=code) in the libpng github repo. 
+
 Examples:
         - https://github.com/glennrp/libpng/blob/a37d4836519517bdce6cb9d956092321eca3e73b/contrib/visupng/PngFile.c
         - https://github.com/glennrp/libpng/blob/5f5f98a1a919e89f0bcea26d73d96dec760f222f/contrib/libtests/timepng.c
         - https://github.com/glennrp/libpng/blob/61bfdb0cb02a6f3a62c929dbc9e832894c0a8df2/contrib/libtests/pngvalid.c
         - https://github.com/glennrp/libpng/blob/a37d4836519517bdce6cb9d956092321eca3e73b/contrib/gregbook/writepng.c
 
-After initialization `png_set_error_fn` can be used after struct init to update what error function should be used.
-
-For an idea of the type of strings the `error_fn` and `warning_fn` try browsing the results of a [search for png_error](https://github.com/glennrp/libpng/search?q=png_error&type=code) or [png_warning](https://github.com/glennrp/libpng/search?q=png_warning&type=code) in the libpng github repo. 
-
-    //What to in an error function.
-    //Actually useful error callbacks would be easier to write in the context of an instance with globals so proper clean up can be done.
-    //The addition of an ErrorPointer struct that could hold needed information to pass the the error function would also help.
-    //The error_ptr is a void*, as long as YOU know what it is, it can be whatever you need.
+The addition of an ErrorPointer struct that could hold needed information to pass the the error function can help with clean up. The error_ptr is a `void*`, as long as YOU know what it is, it can be whatever you need.
     
-    //If the user will just leave the rpgram at this point missing a dealloc is not the biggest deal, but fileIO and network might not be closed. 
+If the user will just leave the program at this point missing a dealloc may not the biggest deal, but file IO and network might not be closed, so be sure to check. 
     
-    //With an exit or abort: this "Quitting behavior" will prevent being accepted into the app store.
-    //this is no better than libpng default, almost might as well have left it nil.
+If your callback nopes out with an `exit` or `abort`, this "Quitting behavior" will prevent being accepted into the app store. That's also no better than libpng default, so almost might as well have left it nil.
+
+I have a working, but not super useful, callback example with 
 
 ### Why in my PNG file do I not see the pixel data I'm expecting?
 
