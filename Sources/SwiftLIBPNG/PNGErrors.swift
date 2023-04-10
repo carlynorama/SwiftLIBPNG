@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  PNGErrors.swift
 //  
 //
 //  Created by Carlyn Maw on 4/7/23.

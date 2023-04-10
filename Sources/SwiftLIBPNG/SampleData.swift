@@ -15,7 +15,7 @@
 
 extension SwiftLIBPNG {
     //These two items should be save-able as PNGs
-    public static let small_transparent_full = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, //file signature
+    public static let png_data_small_transparent_full = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, //file signature
                                               0x00, 0x00, 0x00, 0x0d, //size of IDHR (always 13)
                                               0x49, 0x48, 0x44, 0x52, //"IDHR"
                                               0x00, 0x00, 0x00, 0x01, //width - 1
@@ -41,7 +41,7 @@ extension SwiftLIBPNG {
                                               0xae, 0x42, 0x60, 0x82 //CRC-32 AE426082
                                              ]
     
-    public static let small_rgba_full = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, //file signature
+    public static let png_data_rgba_color_test = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, //file signature
                                        //---------------- header chunk
                                        0x00, 0x00, 0x00, 0x0d, //size of IDHR (always 12)
                                        0x49, 0x48, 0x44, 0x52, //"IHDR"
@@ -57,7 +57,7 @@ extension SwiftLIBPNG {
                                        0x00, 0x00, 0x00, 0x1f, //size of IDAT - 31
                                        0x49, 0x44, 0x41, 0x54, //"IDAT"
                                                    0x08, 0x1d, //zlib Header
-                                                         0x01, //?? BFINAL = 1, BTYPE = 00 ?
+                                                         0x01, //BFINAL = 1, BTYPE = 00  This is the last (only)chunk, yes. 
                                        0x14, 0x00, 0xeb, 0xff, //LEN & NLEN of data  (Length of data -> 20 (3*3 + 2))
                                        
                                                          0x00, //row filter filter type (none/no change)
@@ -77,6 +77,10 @@ extension SwiftLIBPNG {
                                        0x49, 0x45, 0x4e, 0x44, //"IEND"
                                        0xae, 0x42, 0x60, 0x82 //CRC-32 AE426082
                                       ]
-    //
+    
+    //red 0x77, green 0x00, blue 0xRANDOM, alpha 0xFF
+    public static let pixel_data_15_rgba_purpleish = [119, 0, 99, 255, 119, 0, 92, 255, 119, 0, 160, 255, 119, 0, 245, 255, 119, 0, 81, 255, 119, 0, 152, 255, 119, 0, 211, 255, 119, 0, 24, 255, 119, 0, 221, 255, 119, 0, 199, 255, 119, 0, 239, 255, 119, 0, 224, 255, 119, 0, 184, 255, 119, 0, 101, 255, 119, 0, 217, 255]
+    
+    public static let pixel_data_6_rgb_color_test = [255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 128, 128, 128, 255, 255, 255]
 
 }
