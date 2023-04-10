@@ -138,8 +138,7 @@ For an idea of the type of strings the `error_fn` and `warning_fn` try browsing 
 
 ### Why in my PNG file do I not see the pixel data I'm expecting?
 
-
-- TODO: filter types
+- TODO: write about filter types
 http://www.libpng.org/pub/png/book/chapter09.html
  None     Each byte is unchanged.
  Sub     Each byte is replaced with the difference between it and the ``corresponding byte'' to its left.
@@ -206,7 +205,6 @@ void my_png_write_data(png_structp png_ptr, png_bytep data, png_size_t length)
 Where you can see that it is implementing by hand that buffer tracking (`mem_encode`) and the buffer expansion by hand.
 
 Thankfully using `Data` appears to make all of that unnecessary.  
-
 
 ### Simplified API
 
