@@ -20,7 +20,7 @@ Although some people will tell you that PNG stands for Portable Network Graphic,
 - The main site: <http://www.libpng.org>
 - How PNGs work. Code is out of date but still very much a good read: <http://www.libpng.org/pub/png/book/> 
 - More up to date than /book/ but still seems to lag :<http://www.libpng.org/pub/png/libpng-manual.txt> 
-- Had information that I did not find in manual. Actually has code post v1.6 -><https://github.com/glennrp/libpng/blob/12222e6fbdc90523be77633ed430144cfee22772/INSTALL> 
+- Actual most recent: https://github.com/glennrp/libpng/
 
 - 'just the spec ma'am' - <https://www.w3.org/TR/2003/REC-PNG-20031110/>, <https://w3c.github.io/PNG-spec/>
 - zlib spec for analyzing IDAT <https://www.zlib.net/manual.html>
@@ -34,20 +34,23 @@ To just look at the HEX
 - Shell option 1 `od -t x1 png-transparent.png`
 - Shell option 2 for bigger files `tail -f png-transparent.png | hexdump -C`
 
-Very handy PNG verifier: <https://www.nayuki.io/page/png-file-chunk-inspector>
+Testing and verification
+
+- Very handy PNG verifier: <https://www.nayuki.io/page/png-file-chunk-inspector>
+- "The "official" test-suite for PNG" <http://www.schaik.com/pngsuite/>
 
 
 ## Notes
 
 ### Managing the pointers
 
-To use `libpng` to read or write the first step is to allocate memory for structs libpng will use to store information about the png and its settings. 
+To use `libpng` to read or write the first step is to allocate memory for structs `libpng` will use to store information about the png and its settings. 
 
 From the documentation (on how to read, but a png_ptr and info_ptr are used for both reading a writing):
 
 >The struct at which png_ptr points is used internally by libpng to keep track of the current state of the PNG image at any given moment; info_ptr is used to indicate what its state will be after all of the user-requested transformations are performed. One can also allocate a second information struct, usually referenced via an end_ptr variable; this can be used to hold all of the PNG chunk information that comes after the image data, in case it is important to keep pre- and post-IDAT information separate (as in an image editor, which should preserve as much of the existing PNG structure as possible). For this application, we don't care where the chunk information comes from, so we will forego the end_ptr information struct and direct everything to info_ptr.
 
-The functions libpng provides for this come in two flavors, ones that return pointers and ones that take them and their handling functions in: 
+The functions `libpng` provides for this come in two flavors, ones that return pointers and ones that take them and their handling functions in: 
 
 ```c
     png_structp png_ptr = png_create_write_struct(
@@ -68,10 +71,73 @@ The functions libpng provides for this come in two flavors, ones that return poi
     );
 ```
 
-Both styles of struct creation still require a call to `png_destroy_write_structs` functions on wrap up. 
+Both styles of struct creation still require a call to `png_destroy_write_structs` functions on wrap up. Memory management is a big deal in C. Always write the destroy with the create, like closing a parens. 
 
+### Most of the example code has a set_jmp? Why not yours?
 
-- TODO: Case of the disappearing setjmp(png_jmpbuf(png_ptr))
+A lot of example code has a chunk along the lines of: `if (setjmp(png_jmpbuf(png_ptr))) { /* DO THIS */ }`.
+
+This overrides the default error handling if the file received is not a PNG file, for example. The default behaviors seem to be print statements and PNG_ABORT, from what I can tell, so it would be good to override them. However, using setjmp() and longjmp() to do that is not guaranteed to be thread safe. There is some ambiguity in the documentation (to me), but it seems as if the compiler flag to allow the setting of jumpdef is on by default because the newish "Simplified API" needs it. (It appears it was off by default in 1.4, but now is on again). Some implementations on libpng turn it off.
+
+Why hassle with this very C specific type of error handling? The setjmp saves the calling environment to be used by longjmp. This means inside the setjmp block using png_ptr, info_ptr, or even returning will all work. C callbacks, by contrast, can only use what get offered to them as parameters. 
+
+Look in example code for
+- `PNG_SETJMP_NOT_SUPPORTED` in older code 
+- `#define PNG_NO_SETJMP` turns the feature off `#define PNG_SETJMP_SUPPORTED` turns the feature on)
+- Also might be `#undef PNG_SETJMP_SUPPORTED`
+- `#include <setjmp.h>` is an indicator the code will be using `png_jmpbuf` style error setting
+        
+For more information on libpng and setjmp/longjmp: 
+- search for "Setjmp/longjmp issues" [INSTALL guide](https://github.com/glennrp/libpng/blob/12222e6fbdc90523be77633ed430144cfee22772/INSTALL) 
+- Also:[example.c]( https://github.com/glennrp/libpng/blob/a37d4836519517bdce6cb9d956092321eca3e73b/example.c)
+- search for "Error handling in libpng is done through"  in [the manual](https://github.com/glennrp/libpng/blob/libpng16/libpng-manual.txt)
+
+For more on setjmp/longjmp in general:
+- https://en.wikipedia.org/wiki/Setjmp.h
+- https://stackoverflow.com/questions/1692814/exception-handling-in-c-what-is-the-use-of-setjmp-returning-0
+
+That said, to side step all of that (while still getting more graceful failing behavior?) the choices appear to be 
+-  Using those aforementioned "Simplified libpng API" (No examples of that in this repo) 
+-  Setting the error functions in the `png_create_*_struct` functions, i.e.  `(png_voidp)user_error_ptr, user_error_fn, user_warning_fn)`, although hardly any examples use that. 
+
+#### Custom Error Functions
+
+From the manual, the warning functions passes to `png_create_*_struct` should be of the formats:
+```c
+    void user_error_fn(png_structp png_ptr,
+        png_const_charp error_msg);
+
+    void user_warning_fn(png_structp png_ptr,
+        png_const_charp warning_msg);
+
+//Then, within your user_error_fn or user_warning_fn, you can retrieve
+//the error_ptr if you need it, by calling
+
+    png_voidp error_ptr = png_get_error_ptr(png_ptr);
+```
+
+Examples:
+        - https://github.com/glennrp/libpng/blob/a37d4836519517bdce6cb9d956092321eca3e73b/contrib/visupng/PngFile.c
+        - https://github.com/glennrp/libpng/blob/5f5f98a1a919e89f0bcea26d73d96dec760f222f/contrib/libtests/timepng.c
+        - https://github.com/glennrp/libpng/blob/61bfdb0cb02a6f3a62c929dbc9e832894c0a8df2/contrib/libtests/pngvalid.c
+        - https://github.com/glennrp/libpng/blob/a37d4836519517bdce6cb9d956092321eca3e73b/contrib/gregbook/writepng.c
+
+After initialization `png_set_error_fn` can be used after struct init to update what error function should be used.
+
+For an idea of the type of strings the `error_fn` and `warning_fn` try browsing the results of a [search for png_error](https://github.com/glennrp/libpng/search?q=png_error&type=code) or [png_warning](https://github.com/glennrp/libpng/search?q=png_warning&type=code) in the libpng github repo. 
+
+    //What to in an error function.
+    //Actually useful error callbacks would be easier to write in the context of an instance with globals so proper clean up can be done.
+    //The addition of an ErrorPointer struct that could hold needed information to pass the the error function would also help.
+    //The error_ptr is a void*, as long as YOU know what it is, it can be whatever you need.
+    
+    //If the user will just leave the rpgram at this point missing a dealloc is not the biggest deal, but fileIO and network might not be closed. 
+    
+    //With an exit or abort: this "Quitting behavior" will prevent being accepted into the app store.
+    //this is no better than libpng default, almost might as well have left it nil.
+
+### Why in my PNG file do I not see the pixel data I'm expecting?
+
 
 - TODO: filter types
 http://www.libpng.org/pub/png/book/chapter09.html
@@ -140,3 +206,30 @@ void my_png_write_data(png_structp png_ptr, png_bytep data, png_size_t length)
 Where you can see that it is implementing by hand that buffer tracking (`mem_encode`) and the buffer expansion by hand.
 
 Thankfully using `Data` appears to make all of that unnecessary.  
+
+
+### Simplified API
+
+//TODO: Learn about this.
+
+A "simplified API" has been added (see documentation in png.h and a simple
+example in contrib/examples/pngtopng.c).  The new publicly visible API
+includes the following:
+```
+   macros:
+     PNG_FORMAT_*
+     PNG_IMAGE_*
+   structures:
+     png_control
+     png_image
+   read functions
+     png_image_begin_read_from_file()
+     png_image_begin_read_from_stdio()
+     png_image_begin_read_from_memory()
+     png_image_finish_read()
+     png_image_free()
+   write functions
+     png_image_write_to_file()
+     png_image_write_to_memory()
+     png_image_write_to_stdio()
+```

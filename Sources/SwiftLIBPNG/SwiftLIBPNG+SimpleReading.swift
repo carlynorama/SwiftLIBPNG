@@ -12,12 +12,13 @@ import Darwin
 
 import png
 
+
 //http://www.libpng.org/pub/png/libpng-manual.txt
 // Text with //DOC: prefix is from the documentation above.
 
 extension SwiftLIBPNG {
     
-    //TODO: This code (is expected to) hard crash if the file is not a valid PNG. See `Why no setjmp??` note
+    //TODO: This code (is expected to) hard crash if the file is not a valid PNG. Default error handling is stderr and ABORT.
     
     //NOT using "libpng simplified API"
     public static func simpleFileRead(from path:String) throws -> [UInt8] {
@@ -38,7 +39,10 @@ extension SwiftLIBPNG {
          */
         var png_ptr:OpaquePointer? = png_create_read_struct(PNG_LIBPNG_VER_STRING, nil, nil,
                                                             nil);
-        if (png_ptr == nil) { throw PNGError.outOfMemory }
+        if (png_ptr == nil) {
+            fclose(file_ptr);
+            throw PNGError.outOfMemory
+        }
         
         //Makes the pointer to handle information about how the underlying PNG data needs to be manipulated.
         //C:-- png_create_info_struct(png_const_structrp!)
@@ -48,19 +52,8 @@ extension SwiftLIBPNG {
             throw PNGError.outOfMemory;
         }
         
-        //## Why no setjmp??
-        //In a lot of code you'll see references to
-        //`if (setjmp(png_jmpbuf(png_ptr))) { /* DO THIS */ }` here.
-        //This overrides the default error handling if the file received is not a PNG file.
-        //The default is to hard crash, which isn't great, so it makes sense to override it.
-        //However, this feature is turned off by default now since it is not thread safe starting with libpng-1.6.0
-        
-        //Search for "Setjmp/longjmp issues"
-        //https://github.com/glennrp/libpng/blob/12222e6fbdc90523be77633ed430144cfee22772/INSTALL
-        //IF you set your compiler flags to allow this feature, I believe png_set_longjmp_fn is the new way to set this function.
-        
-        //In the mean time your code should make sure to verify that the file path does indeed point to a PNG file before calling this function.
-        
+        //## Why no setjmp?? - see README
+     
         //set destination pointer and file source pointer
         //C:-- png_init_io(png_ptr: png_structrp!, fp: png_FILE_p!)
         png_init_io(png_ptr, file_ptr);

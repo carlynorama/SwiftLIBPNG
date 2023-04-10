@@ -61,16 +61,61 @@ public struct SwiftLIBPNG {
     }
     
     
+
     
-    //MARK: Global Callback Defs
     
-    //example row completion callback if an inline closure is not appropriate. Since stored variables are not allowed in extensions these will need to be here.
+    //MARK: Global Error Callbacks
     
-    //`Attribute @convention(c)` can only be applied to types, not declarations
-    //    let rowCompleteCallback:@convention(c) (OpaquePointer?, UInt32, Int32) -> () = {png_ptr, row, pass in
-    //        print(png_ptr ?? "nil", row, pass)
-    //    }
+    struct PNGErrorInfo {
+        var png_ptr:OpaquePointer?
+        var info_ptr:OpaquePointer?
+        var fileHandle:UnsafeMutablePointer<FILE>?
+        var testExtraData:UInt32
+        
+        func print_info() {
+            print("\(String(describing: png_ptr)), \(String(describing: info_ptr)), \(String(describing: fileHandle)), \(testExtraData)")
+        }
+    }
+
+    static let writeErrorCallback:@convention(c) (Optional<OpaquePointer>, Optional<UnsafePointer<CChar>>) -> () = { png_ptr, message in
+        if let error_ptr = png_get_error_ptr(png_ptr) {
+            print("There was a non nil error pointer set a \(error_ptr)")
+            var typed_error_ptr = error_ptr.load(as: PNGErrorInfo.self)//error_ptr.assumingMemoryBound(to: PNGErrorInfo.self)
+            typed_error_ptr.print_info()
+            //If aborting whole program everything should be freed automatically, but in case not...
+            precondition(png_ptr == typed_error_ptr.png_ptr)
+            png_destroy_write_struct(&typed_error_ptr.png_ptr, &typed_error_ptr.info_ptr)
+            if typed_error_ptr.fileHandle != nil {
+                fclose(typed_error_ptr.fileHandle)
+            }
+        }
     
+        if let message {
+            print("libpng crashed with warning: \(String(cString: message))")
+        } else {
+            print("libpng crashed without providing a message.")
+        }
+        
+        //Some way to kill png?
+        //How to leave PNG write...
+        exit(99)  //see also https://en.cppreference.com/w/c/program/atexit
+        //abort() //terminates the process by raising a SIGABRT signal, possible handler?
+        
+    }
+    
+    static let writeWarningCallback:@convention(c) (Optional<OpaquePointer>, Optional<UnsafePointer<CChar>>) -> () = { png_ptr, message in
+        if let error_ptr = png_get_error_ptr(png_ptr) {
+            print("There was a non nil error pointer set a \(error_ptr)")
+            
+        }
+        if let message {
+            print("libpng sends warning: \(String(cString: message))")
+        } else {
+            print("libpng sends unspecified warning")
+        }
+        
+        //Use the error pointer to set flags, etc.
+    }
     
     
 }
