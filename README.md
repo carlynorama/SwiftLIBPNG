@@ -100,7 +100,7 @@ For more on setjmp/longjmp in general:
 - https://stackoverflow.com/questions/7334595/longjmp-out-of-signal-handler
 - https://tratt.net/laurie/blog/2005/timing_setjmp_and_the_joy_of_standards.html
 
-That said, to side step all of this the choices appear to be to using those aforementioned "Simplified libpng API" (No examples of that in this repo, only indexed colors), which return UInt32 error codes. 
+That said, to side step all of this one could use functions from the aforementioned "Simplified libpng API" (No examples of that in this repo as it only works for indexed colors), which return UInt32 error codes. 
 
 
 #### Why not just use custom error functions?
@@ -143,13 +143,77 @@ the `buildSimpleDataExample` calls a working, but not super useful, callback exa
 
 ### Why doesn't the IDAT look like the pixels that were passed in/out of libpng?
 
-- TODO: write about filter types
-http://www.libpng.org/pub/png/book/chapter09.html
- None     Each byte is unchanged.
- Sub     Each byte is replaced with the difference between it and the ``corresponding byte'' to its left.
- Up     Each byte is replaced with the difference between it and the byte above it (in the previous row, as it was before filtering).
- Average     Each byte is replaced with the difference between it and the average of the corresponding bytes to its left and above it, truncating any fractional part.
- Paeth     Each byte is replaced with the difference between it and the Paeth predictor of the corresponding bytes to its left, above it, and to its upper left.
+The full explanation? <http://www.libpng.org/pub/png/book/chapter09.html>
+
+PNG's claim to fame is it's LOSSLESS compression, but it is, by default, compressed. Compressed RGBA data will look nothing like the colors you put in unless you specifically ask your PNG writer to not compress. These are your options (from the link above)
+
+ |None|Each byte is unchanged.|
+ |Sub|Each byte is replaced with the difference between it and the ``corresponding byte'' to its left.|
+ |Up|Each byte is replaced with the difference between it and the byte above it (in the previous row, as it was before| filtering).
+ |Average|Each byte is replaced with the difference between it and the average of the corresponding bytes to its left and above it, truncating any fractional part.|
+ |Paeth|Each byte is replaced with the difference between it and the Paeth predictor of the corresponding bytes to its left, above it, and to its upper left.|
+ 
+ 
+  To choose your filter types, during the write process one can `png_set_filter`. Explanation from the manual section `IV. Writing`:
+ 
+ >If you have no special needs in this area, let the library do what it wants by
+not calling this function at all, as it has been tuned to deliver a good
+speed/compression ratio. The second parameter to png_set_filter() is
+the filter method, for which the only valid values are 0 (as of the
+July 1999 PNG specification, version 1.2) or 64 (if you are writing
+a PNG datastream that is to be embedded in a MNG datastream).  The third
+parameter is a flag that indicates which filter type(s) are to be tested
+for each scanline.  See the PNG specification for details on the specific
+filter types.
+ 
+ ```
+     png_set_filter(png_ptr, 0,
+       PNG_FILTER_NONE  | PNG_FILTER_VALUE_NONE |
+       PNG_FILTER_SUB   | PNG_FILTER_VALUE_SUB  |
+       PNG_FILTER_UP    | PNG_FILTER_VALUE_UP   |
+       PNG_FILTER_AVG   | PNG_FILTER_VALUE_AVG  |
+       PNG_FILTER_PAETH | PNG_FILTER_VALUE_PAETH|
+       PNG_ALL_FILTERS  | PNG_FAST_FILTERS);
+    ```
+What the actual mask values are from `png.h` 
+    
+```
+/* Flags for png_set_filter() to say which filters to use.  The flags
+ * are chosen so that they don't conflict with real filter types
+ * below, in case they are supplied instead of the #defined constants.
+ * These values should NOT be changed.
+ */
+#define PNG_NO_FILTERS     0x00
+#define PNG_FILTER_NONE    0x08
+#define PNG_FILTER_SUB     0x10
+#define PNG_FILTER_UP      0x20
+#define PNG_FILTER_AVG     0x40
+#define PNG_FILTER_PAETH   0x80
+#define PNG_FAST_FILTERS (PNG_FILTER_NONE | PNG_FILTER_SUB | PNG_FILTER_UP)
+#define PNG_ALL_FILTERS (PNG_FAST_FILTERS | PNG_FILTER_AVG | PNG_FILTER_PAETH)
+
+/* Filter values (not flags) - used in pngwrite.c, pngwutil.c for now.
+ * These defines should NOT be changed.
+ */
+#define PNG_FILTER_VALUE_NONE  0
+#define PNG_FILTER_VALUE_SUB   1
+#define PNG_FILTER_VALUE_UP    2
+#define PNG_FILTER_VALUE_AVG   3
+#define PNG_FILTER_VALUE_PAETH 4
+#define PNG_FILTER_VALUE_LAST  5
+
+```
+ 
+ One can also do things like:
+ 
+ - Change the compression buffer size: set the `png_set_compression_buffer_size(png_ptr, buffer_size);`
+ - Ask for a bigger space for your IDAT data `png_set_chunk_malloc_max(png_ptr, user_chunk_malloc_max);`
+ 
+ To talk to zlib, (which, generally, really, don't): 
+ 
+ - `png_set_compression_level` e.g. `png_set_compression_level(png_ptr, Z_BEST_COMPRESSION);`
+ 
+ Most users of libpng should not fiddle with these settings, but its helpful to know why the data doesn't match what its given by default. 
 
 ### Why does the writing example use Data instead of [UInt8]?
 
