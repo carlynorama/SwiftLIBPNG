@@ -73,7 +73,7 @@ The functions `libpng` provides for this come in two flavors, ones that return p
 
 Both styles of struct creation still require a call to `png_destroy_write_structs` functions on wrap up. Memory management is a big deal in C. Always write the destroy with the create, like closing a parens. 
 
-### Most of the example code has a set_jmp? Why not yours?
+### Most of the example code has a set_jmp? Why not yours? (yet)
 
 A lot of example code has a chunk along the lines of: `if (setjmp(png_jmpbuf(png_ptr))) { /* DO THIS */ }`.
 
@@ -100,11 +100,14 @@ For more on setjmp/longjmp in general:
 - https://stackoverflow.com/questions/7334595/longjmp-out-of-signal-handler
 - https://tratt.net/laurie/blog/2005/timing_setjmp_and_the_joy_of_standards.html
 
-That said, to side step all of that (while still getting more graceful failing behavior?) the choices appear to be 
--  Using those aforementioned "Simplified libpng API" (No examples of that in this repo) 
--  Setting the error functions in the `png_create_*_struct` functions, i.e.  `(png_voidp)user_error_ptr, user_error_fn, user_warning_fn)`, although hardly any examples use that. 
+That said, to side step all of this the choices appear to be to using those aforementioned "Simplified libpng API" (No examples of that in this repo, only indexed colors), which return UInt32 error codes. 
 
-#### Custom Error Functions
+
+#### Why not just use custom error functions?
+
+Well, this code tries but it doesn't end up with anything that useful.
+
+Setting the error functions in the `png_create_*_struct` functions, i.e.  `(png_voidp)user_error_ptr, user_error_fn, user_warning_fn)` is not common in example code, but can be done. However, these functions STILL need to have `jmpdef`'s in them to permanently leave `libpng`'s functions so they are not a way to avoid `jmpdef`.  
 
 From the manual, the warning functions passes to `png_create_*_struct` should be of the formats:
 ```c
@@ -210,11 +213,12 @@ Thankfully using `Data` appears to make all of that unnecessary.
 
 ### Simplified API
 
-//TODO: Learn about this.
+There is apparently a simpler API. However, they target "in-memory bitmap formats" not RGBA, which this project requires. 
 
-A "simplified API" has been added (see documentation in png.h and a simple
+>A "simplified API" has been added (see documentation in png.h and a simple
 example in contrib/examples/pngtopng.c).  The new publicly visible API
 includes the following:
+
 ```
    macros:
      PNG_FORMAT_*
