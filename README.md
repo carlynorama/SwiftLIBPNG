@@ -209,11 +209,11 @@ What the actual mask values are from `png.h`
  - Change the compression buffer size: set the `png_set_compression_buffer_size(png_ptr, buffer_size);`
  - Ask for a bigger space for your IDAT data `png_set_chunk_malloc_max(png_ptr, user_chunk_malloc_max);`
  
- To talk to zlib, (which, generally, really, don't): 
+ To talk to zlib directly (don't): 
  
  - `png_set_compression_level` e.g. `png_set_compression_level(png_ptr, Z_BEST_COMPRESSION);`
  
- Most users of libpng should not fiddle with these settings, but its helpful to know why the data doesn't match what its given by default. 
+ Most users of `libpng` will not need to fiddle with these settings, but its helpful to know why the data doesn't match what its given by default. 
 
 ### Why does the writing example use Data instead of [UInt8]?
 
