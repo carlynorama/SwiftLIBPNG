@@ -175,7 +175,7 @@ filter types.
        PNG_FILTER_AVG   | PNG_FILTER_VALUE_AVG  |
        PNG_FILTER_PAETH | PNG_FILTER_VALUE_PAETH|
        PNG_ALL_FILTERS  | PNG_FAST_FILTERS);
-    ```
+```
 What the actual mask values are from `png.h` 
     
 ```C
