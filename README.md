@@ -146,12 +146,13 @@ the `buildSimpleDataExample` calls a working, but not super useful, callback exa
 The full explanation? <http://www.libpng.org/pub/png/book/chapter09.html>
 
 PNG's claim to fame is it's LOSSLESS compression, but it is, by default, compressed. Compressed RGBA data will look nothing like the colors you put in unless you specifically ask your PNG writer to not compress. These are your options (from the link above)
-
- |None|Each byte is unchanged.|
- |Sub|Each byte is replaced with the difference between it and the ``corresponding byte'' to its left.|
- |Up|Each byte is replaced with the difference between it and the byte above it (in the previous row, as it was before| filtering).
- |Average|Each byte is replaced with the difference between it and the average of the corresponding bytes to its left and above it, truncating any fractional part.|
- |Paeth|Each byte is replaced with the difference between it and the Paeth predictor of the corresponding bytes to its left, above it, and to its upper left.|
+|Style  |Description|
+|-------|-----------|
+|None|Each byte is unchanged.|
+|Sub|Each byte is replaced with the difference between it and the ``corresponding byte'' to its left.|
+|Up|Each byte is replaced with the difference between it and the byte above it (in the previous row, as it was before filtering).|
+|Average|Each byte is replaced with the difference between it and the average of the corresponding bytes to its left and above it, truncating any fractional part.|
+|Paeth|Each byte is replaced with the difference between it and the Paeth predictor of the corresponding bytes to its left, above it, and to its upper left.|
  
  
   To choose your filter types, during the write process one can `png_set_filter`. Explanation from the manual section `IV. Writing`:
