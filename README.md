@@ -178,7 +178,7 @@ filter types.
     ```
 What the actual mask values are from `png.h` 
     
-```
+```C
 /* Flags for png_set_filter() to say which filters to use.  The flags
  * are chosen so that they don't conflict with real filter types
  * below, in case they are supplied instead of the #defined constants.
