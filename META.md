@@ -8,7 +8,7 @@
 - [Making a C library available in Swift using the Swift Package Manager](https://rderik.com/blog/making-a-c-library-available-in-swift-using-the-swift-package/)
 - <https://clang.llvm.org/docs/Modules.html>
 - [Guide to including a C library into an iOS project written in Swift](https://rlaguilar.com/posts/integrate-c-library-ios-project-swift/)
-- [PackageManager BuildSettings Proposal](https://github.com/apple/swift-evolution/blob/main/proposals/0238-package-manager-build-settings.md)) (implemented)
+- [PackageManager BuildSettings Proposal](https://github.com/apple/swift-evolution/blob/main/proposals/0238-package-manager-build-settings.md) (implemented)
 - [PackageManager LinkerSettings](https://developer.apple.com/documentation/packagedescription/linkersetting) for when it really is a System library. 
 
 
