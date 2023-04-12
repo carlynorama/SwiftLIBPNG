@@ -142,6 +142,7 @@ Options:
 - https://stackoverflow.com/questions/63607158/xcode-building-for-ios-simulator-but-linking-in-an-object-file-built-for-ios-f
 - https://www.dynamsoft.com/barcode-reader/docs/mobile//programming/objectivec-swift/faq/arm64-simulator-error.html
 - https://rlaguilar.com/posts/integrate-c-library-ios-project-swift/
+- https://thisisyuu.github.io/2020/MISC-Building-universal-binaries-from-C-library-for-an-iOS-project/
 
 ### iOS Hardware: No
 
