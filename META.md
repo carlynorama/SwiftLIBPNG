@@ -2,10 +2,15 @@
 # Making A External C Library Wrapper
 
 ## References
+- [How Swift imports C APIs](https://github.com/apple/swift/blob/main/docs/HowSwiftImportsCAPIs.md)
 - [How to use C libraries in Swift?](https://theswiftdev.com/how-to-use-c-libraries-in-swift/)
 -  [How to wrap a C library in Swift](https://www.hackingwithswift.com/articles/87/how-to-wrap-a-c-library-in-swift), but also its more [up to date repo](https://github.com/twostraws/SwiftGD)
 - [Making a C library available in Swift using the Swift Package Manager](https://rderik.com/blog/making-a-c-library-available-in-swift-using-the-swift-package/)
 - <https://clang.llvm.org/docs/Modules.html>
+- [Guide to including a C library into an iOS project written in Swift](https://rlaguilar.com/posts/integrate-c-library-ios-project-swift/)
+- [PackageManager BuildSettings Proposal]((https://github.com/apple/swift-evolution/blob/main/proposals/0238-package-manager-build-settings.md)) (implemented)
+- [PackageManager LinkerSettings](https://developer.apple.com/documentation/packagedescription/linkersetting) for when it really is a System library. 
+
 
 
 ## Getting Started
@@ -49,7 +54,7 @@ Make sure to add the name to the library target's dependencies as well.
 
 #### Create a module.modulemap file
 
-If using the deprecated(?) system-module command this was created for you at the top level, but when using the library. This file is what really tells the compiler where to find the library. We have choices here, to make a regular header, a shim header, a bridging header, or a umbrella header... I've gone with an umbrella header like the SwiftGD repo. 
+If using the deprecated(?) system-module command this was created for you at the top level, but when using the --library initializer it has to be done by hand. This file is what really tells the compiler where to find the library. We have choices here, to make a regular header, a shim header, a bridging header, or a umbrella header... I've gone with an umbrella header like the SwiftGD repo. 
 
 ```zsh
 cd Sources
@@ -136,7 +141,7 @@ Options:
 - https://developer.apple.com/forums/thread/657913
 - https://stackoverflow.com/questions/63607158/xcode-building-for-ios-simulator-but-linking-in-an-object-file-built-for-ios-f
 - https://www.dynamsoft.com/barcode-reader/docs/mobile//programming/objectivec-swift/faq/arm64-simulator-error.html
-
+- https://rlaguilar.com/posts/integrate-c-library-ios-project-swift/
 
 ### iOS Hardware: No
 
