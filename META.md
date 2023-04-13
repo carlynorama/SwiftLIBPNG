@@ -10,6 +10,8 @@
 - [Guide to including a C library into an iOS project written in Swift](https://rlaguilar.com/posts/integrate-c-library-ios-project-swift/)
 - [PackageManager BuildSettings Proposal](https://github.com/apple/swift-evolution/blob/main/proposals/0238-package-manager-build-settings.md) (implemented)
 - [PackageManager LinkerSettings](https://developer.apple.com/documentation/packagedescription/linkersetting) for when it really is a System library? 
+- (2016) http://nsomar.io/modular-framework-creating-and-using-them/
+- https://medium.com/@yuliiasynytsia/link-static-c-library-to-swift-framework-as-a-private-module-97eae2fec75e
 
 
 
