@@ -37,14 +37,22 @@ extension SwiftLIBPNG {
         }
         
         
-        //TODO: Wrapper png_set_write_fn
-        png_set_write_fn(png_ptr, &pngIOBuffer, writeDataCallback, nil)
+        //TODO: Is this necessary? underlying libpng function calls png_warning, but not png_error.
+        //So this will never throw? 
+        do {
+            try setWriteBehavior(png_ptr: png_ptr, bufferPointer: &pngIOBuffer, write_callback: writeDataCallback, flush_callback: nil)
+            
+        } catch {
+            png_destroy_write_struct(&png_ptr, &info_ptr);
+            throw PNGError.message("Couldn't set callbacks")
+        }
         
-        //TODO: Wrapper png_set_write_status_fn
+        //Can call libpng function directly because it cannot fail (no png_warning, no png_error).
+        //Can give it a bad value as a call back pointer, but it will take it without verification.
         png_set_write_status_fn(png_ptr) { png_ptr, row, pass in
             print(png_ptr ?? "nil", row, pass)
         }
-        
+    
         //---------------------------------------------------------------- IHDR
         try setIHDR(png_ptr: png_ptr!, info_ptr: info_ptr!, width: width, height: height, bitDepth: Int32(bitDepth), colorType: colorType)
         
@@ -93,4 +101,31 @@ extension SwiftLIBPNG {
             throw PNGError(result)
         }
     }
+    
+    //Needs Cleanup because underlying libpng function does not take in info_ptr and
+    //info ptr is need for destroy.
+    static func setWriteBehavior(
+        png_ptr:OpaquePointer?,
+        bufferPointer:Optional<UnsafeMutableRawPointer>,
+        write_callback:@convention(c) (Optional<OpaquePointer>, Optional<UnsafeMutablePointer<UInt8>>, Int) -> Void,
+        flush_callback:Optional<@convention(c) (Optional<OpaquePointer>) -> ()>
+    ) throws {
+        let result = pngb_set_write_fn(png_ptr, bufferPointer, write_callback, flush_callback)
+        if result != 0 {
+            throw PNGError(result)
+        }
+    }
+    
+    //Needs Cleanup
+    //Uncessary because underlying libpng function does not jump.
+//    static func setWriteStatusUpdateBehavior(
+//        png_ptr:OpaquePointer?,
+//        status_callback:@convention(c) (Optional<OpaquePointer>, UInt32, Int32) -> ()
+//    ) throws {
+//
+//        let result = pngb_set_write_status_fn(png_ptr, status_callback)
+//        if result != 0 {
+//            throw PNGError(result)
+//        }
+//    }
 }

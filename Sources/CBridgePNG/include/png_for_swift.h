@@ -13,11 +13,10 @@
 
 int pngb_version();
 
-//NOPE. Total glitch fest.
-//void pngb_set_default_data_write_exit(png_structpp png_ptrp, png_infopp info_ptrp);
-
 //MARK: Writing and Setting
 
+//Setting Callbacks
+int pngb_set_write_fn(png_structrp png_ptr, png_voidp io_ptr, png_rw_ptr write_data_fn, png_flush_ptr output_flush_fn);
 //Non IDAT-Chunks
 int pngb_set_IHDR(png_structp png_ptr, png_infop info_ptr, png_uint_32 width, png_uint_32 height, int bit_depth, int color_type, int interlace_method, int compression_method, int filter_method);
 

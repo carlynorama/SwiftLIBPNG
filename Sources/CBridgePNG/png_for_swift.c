@@ -10,7 +10,7 @@
 #include "png_for_swift.h"
 
 //TOO GLITCHY do not use. 
-//void pngb_set_default_data_write_exit(png_structpp png_ptrp, png_infopp info_ptrp) {
+//int pngb_set_default_data_write_exit(png_structpp png_ptrp, png_infopp info_ptrp) {
 //    if (setjmp(png_jmpbuf(*png_ptrp))) {
 //        printf("png_for_swift: I'm outta here, %p, %p, %p, %p\n", png_ptrp, info_ptrp, *png_ptrp, *info_ptrp);
 //        //Have to destroy back in Swift code b/c something hinky with the pointer (especially info).
@@ -18,6 +18,8 @@
 //        return 2;
 //    }
 //}
+
+
 
 int pngb_set_IHDR(png_structp png_ptr, png_infop info_ptr, png_uint_32 width, png_uint_32 height, int bit_depth, int color_type, int interlace_method, int compression_method, int filter_method) {
     
@@ -51,3 +53,25 @@ int pngb_write_png(png_structp png_ptr, png_infop info_ptr, int transforms, png_
     }
     png_write_png(png_ptr, info_ptr, transforms, params);
 }
+
+
+
+//TODO: calls png_warning but never png_error
+//https://github.com/glennrp/libpng/pngwio.c
+int pngb_set_write_fn(png_structrp png_ptr, png_voidp io_ptr, png_rw_ptr write_data_fn, png_flush_ptr output_flush_fn) {
+    if (setjmp(png_jmpbuf(png_ptr))) {
+        printf("write_png error");
+        return 5;
+    }
+    png_set_write_fn(png_ptr, io_ptr, write_data_fn, output_flush_fn);
+    return 0;
+}
+//png_set_write_status_fn does not call png_warning or png_error
+//int pngb_set_write_status_fn(png_structrp png_ptr, png_write_status_ptr write_row_fn) {
+//    if (setjmp(png_jmpbuf(png_ptr))) {
+//        printf("write_png error");
+//        return 5;
+//    }
+//    png_set_write_status_fn(png_ptr, write_row_fn);
+//    return 0;
+//}
