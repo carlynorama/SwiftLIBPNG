@@ -97,15 +97,7 @@ extension SwiftLIBPNG {
          )
          */
         
-        let writeDataCallback: @convention(c) (Optional<OpaquePointer>, Optional<UnsafeMutablePointer<UInt8>>, Int) -> Void = { png_ptr, data_io_ptr, length in
-            guard let output_ptr:UnsafeMutableRawPointer = png_get_io_ptr(png_ptr) else { return }
-            guard let data_ptr:UnsafeMutablePointer<UInt8> = data_io_ptr else { return }
-            //print("callback io output buffer: \(output_ptr)")
-            //print("callback io data buffer: \(data_ptr)")
-            
-            let typed_output_ptr = output_ptr.assumingMemoryBound(to: Data.self)
-            typed_output_ptr.pointee.append(data_ptr, count: length)
-        }
+
         
         png_set_write_fn(png_ptr, &pngIOBuffer, writeDataCallback, nil)
         

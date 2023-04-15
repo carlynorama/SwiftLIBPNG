@@ -6,6 +6,7 @@ import Darwin
 
 import Foundation
 import png
+import CBridgePNG
 
 public struct SwiftLIBPNG {
     //http://www.libpng.org/pub/png/book/chapter08.html#png.ch08.tbl.1
@@ -13,6 +14,10 @@ public struct SwiftLIBPNG {
     
     
     public init() {}
+    
+    public static func testBridge() {
+        pngb_version()
+    }
     
     public static func version() {
         let version = png_access_version_number()
@@ -61,6 +66,18 @@ public struct SwiftLIBPNG {
     }
     
     
+    
+    //MARK: Data Return Callback
+    
+    static let writeDataCallback: @convention(c) (Optional<OpaquePointer>, Optional<UnsafeMutablePointer<UInt8>>, Int) -> Void = { png_ptr, data_io_ptr, length in
+        guard let output_ptr:UnsafeMutableRawPointer = png_get_io_ptr(png_ptr) else { return }
+        guard let data_ptr:UnsafeMutablePointer<UInt8> = data_io_ptr else { return }
+        //print("callback io output buffer: \(output_ptr)")
+        //print("callback io data buffer: \(data_ptr)")
+        
+        let typed_output_ptr = output_ptr.assumingMemoryBound(to: Data.self)
+        typed_output_ptr.pointee.append(data_ptr, count: length)
+    }
 
     
     

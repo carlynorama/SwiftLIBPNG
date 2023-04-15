@@ -15,10 +15,13 @@ let package = Package(
     targets: [
         .systemLibrary(name: "png", pkgConfig: "libpng", providers: [.apt(["libpng-dev"]), .brew(["libpng"])]),
         .target(
-            name: "SwiftLIBPNG",
+            name: "CBridgePNG",
             dependencies: ["png"]),
+        .target(
+            name: "SwiftLIBPNG",
+            dependencies: ["png", "CBridgePNG"]),
         .testTarget(
             name: "SwiftLIBPNGTests",
-            dependencies: ["SwiftLIBPNG"]),
+            dependencies: ["SwiftLIBPNG", "CBridgePNG"]),
     ]
 )

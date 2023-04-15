@@ -21,4 +21,15 @@ enum PNGError: Error, CustomStringConvertible {
     init(_ message: String) {
         self = .message(message)
     }
+    
+    init(_ code: CInt) {
+        switch code {
+        case 4:
+            self = .outOfMemory
+        case 2:
+            self = .message("png returned 2")
+        default:
+            self = .message("Unknown PNG Error")
+        }
+    }
 }
