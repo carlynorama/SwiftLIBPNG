@@ -14,11 +14,7 @@ public struct SwiftLIBPNG {
     
     
     public init() {}
-    
-    public static func testBridge() {
-        pngb_version()
-    }
-    
+
     public static func version() {
         let version = png_access_version_number()
         print(version)

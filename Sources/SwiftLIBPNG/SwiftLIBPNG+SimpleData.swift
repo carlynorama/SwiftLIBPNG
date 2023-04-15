@@ -147,7 +147,7 @@ extension SwiftLIBPNG {
             png_set_rows(png_ptr, info_ptr, &row_pointers)
             
             //high level write.
-            //TODO: Confirm theory has to be inside so row pointers still valid.
+            //Has to be inside so row pointers still valid.
             png_write_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, nil)
         }
         

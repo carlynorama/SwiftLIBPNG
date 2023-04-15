@@ -30,7 +30,7 @@ enum PNGError: Error, CustomStringConvertible {
             self = .message("png returned 2")
         default:
             print("png code: \(code)")
-            self = .message("Unknown PNG Error")
+            self = .message("Unknown PNG Error with code \(code)")
         }
     }
 }
