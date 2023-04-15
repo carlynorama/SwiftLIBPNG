@@ -23,10 +23,11 @@ int pngb_version() {
     return version;
 }
 
-void pngb_set_default_data_write_exit(png_structp png_ptr, png_infop info_ptr) {
-    if (setjmp(png_jmpbuf(png_ptr))) {
-        png_destroy_write_struct(&png_ptr, &info_ptr);
-        printf("%s", "png_for_swift: I'm outta here");
+void pngb_set_default_data_write_exit(png_structpp png_ptrp, png_infopp info_ptrp) {
+    if (setjmp(png_jmpbuf(*png_ptrp))) {
+        printf("png_for_swift: I'm outta here, %p, %p, %p, %p\n", png_ptrp, info_ptrp, *png_ptrp, *info_ptrp);
+        //Have to destroy back in Swift code b/c something hinky with the pointer (especially info).
+        //png_destroy_write_struct(png_ptrp, info_ptrp);
         return 2;
     }
 }

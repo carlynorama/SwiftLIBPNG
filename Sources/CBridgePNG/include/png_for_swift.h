@@ -14,7 +14,8 @@
 int pngb_version();
 int pngb_test_error_fetching();
 
-void pngb_set_default_data_write_exit(png_structp png_ptr, png_infop info_ptr);
+void pngb_set_default_data_write_exit(png_structpp png_ptrp, png_infopp info_ptrp);
+//void pngb_set_default_data_write_exit(png_structp png_ptr, png_infop info_ptr);
 //void set_default_file_write_exit(png_structp png_ptr, png_infop info_ptr, png_FILE_p file_ptr);
 
 #endif /* png_for_swift_h */
