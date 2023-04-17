@@ -37,8 +37,8 @@ extension SwiftLIBPNG {
         }
         
         
-        //TODO: Is this necessary? underlying libpng function calls png_warning, but not png_error.
-        //So this will never throw?
+        //TODO: Will setWriteBehavior ever throw?
+        //underlying libpng function calls png_warning, but not png_error.
         do {
             try setWriteBehavior(png_ptr: png_ptr, bufferPointer: &pngIOBuffer, write_callback: writeDataCallback, flush_callback: nil)
             
