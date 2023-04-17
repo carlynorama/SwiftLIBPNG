@@ -38,7 +38,7 @@ extension SwiftLIBPNG {
         
         
         //TODO: Is this necessary? underlying libpng function calls png_warning, but not png_error.
-        //So this will never throw? 
+        //So this will never throw?
         do {
             try setWriteBehavior(png_ptr: png_ptr, bufferPointer: &pngIOBuffer, write_callback: writeDataCallback, flush_callback: nil)
             
@@ -47,7 +47,8 @@ extension SwiftLIBPNG {
             throw PNGError.message("Couldn't set callbacks")
         }
         
-        //Can call libpng function directly because it cannot fail (no png_warning, no png_error).
+        //Can call libpng function directly because it cannot fail i.e.
+        //no png_warning(), no png_error() in actual function.
         //Can give it a bad value as a call back pointer, but it will take it without verification.
         png_set_write_status_fn(png_ptr) { png_ptr, row, pass in
             print(png_ptr ?? "nil", row, pass)
