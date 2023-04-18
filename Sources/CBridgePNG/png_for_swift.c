@@ -52,6 +52,7 @@ int pngb_write_png(png_structp png_ptr, png_infop info_ptr, int transforms, png_
         return 4;
     }
     png_write_png(png_ptr, info_ptr, transforms, params);
+    return 0;
 }
 
 
