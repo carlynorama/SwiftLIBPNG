@@ -12,13 +12,15 @@ import Darwin
 
 import png
 
+//WARNING: This code (is expected to) hard crash if the file is not a valid PNG. Default error handling is stderr and ABORT.
+
 
 //http://www.libpng.org/pub/png/libpng-manual.txt
 // Text with //DOC: prefix is from the documentation above.
 
 extension SwiftLIBPNG {
     
-    //TODO: This code (is expected to) hard crash if the file is not a valid PNG. Default error handling is stderr and ABORT.
+
     
     //NOT using "libpng simplified API"
     public static func simpleFileRead(from path:String) throws -> [UInt8] {

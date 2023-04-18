@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  SwiftLIBPNG+SimpleData.swift
 //  
 //
 //  Created by Labtanza on 4/7/23.
@@ -14,6 +14,8 @@ import Foundation
 
 import png
 
+
+//WARNING: This code (is expected to) hard crash if something goes wrong. The callback functions only print to console and exit() the program. Not suitable for GUI applications. 
 
 extension SwiftLIBPNG {
     // EXAMPLE USAGE
