@@ -12,6 +12,7 @@
 - [PackageManager LinkerSettings](https://developer.apple.com/documentation/packagedescription/linkersetting) for when it really is a System library? 
 - (2016) http://nsomar.io/modular-framework-creating-and-using-them/
 - https://medium.com/@yuliiasynytsia/link-static-c-library-to-swift-framework-as-a-private-module-97eae2fec75e
+- https://developer.apple.com/forums/thread/42737
 
 
 
