@@ -128,10 +128,10 @@ After initialization `png_set_error_fn` can be used after struct init to update 
 For an idea of the type of strings the `error_fn` and `warning_fn` try browsing the results of a [search for png_error](https://github.com/glennrp/libpng/search?q=png_error&type=code) or [png_warning](https://github.com/glennrp/libpng/search?q=png_warning&type=code) in the libpng github repo. 
 
 Examples:
-        - https://github.com/glennrp/libpng/blob/a37d4836519517bdce6cb9d956092321eca3e73b/contrib/visupng/PngFile.c
-        - https://github.com/glennrp/libpng/blob/5f5f98a1a919e89f0bcea26d73d96dec760f222f/contrib/libtests/timepng.c
-        - https://github.com/glennrp/libpng/blob/61bfdb0cb02a6f3a62c929dbc9e832894c0a8df2/contrib/libtests/pngvalid.c
-        - https://github.com/glennrp/libpng/blob/a37d4836519517bdce6cb9d956092321eca3e73b/contrib/gregbook/writepng.c
+        - [PngFile.c](https://github.com/glennrp/libpng/blob/a37d4836519517bdce6cb9d956092321eca3e73b/contrib/visupng/PngFile.c)
+        - [timepng.c](https://github.com/glennrp/libpng/blob/5f5f98a1a919e89f0bcea26d73d96dec760f222f/contrib/libtests/timepng.c)
+        - [pngvalid.c](https://github.com/glennrp/libpng/blob/61bfdb0cb02a6f3a62c929dbc9e832894c0a8df2/contrib/libtests/pngvalid.c)
+        - [writepng.c](https://github.com/glennrp/libpng/blob/a37d4836519517bdce6cb9d956092321eca3e73b/contrib/gregbook/writepng.c)
 
 The addition of an ErrorPointer struct that could hold needed information to pass the the error function can help with clean up. The error_ptr is a `void*`, as long as YOU know what it is, it can be whatever you need.
     
