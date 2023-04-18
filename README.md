@@ -73,13 +73,13 @@ The functions `libpng` provides for this come in two flavors, ones that return p
 
 Both styles of struct creation still require a call to `png_destroy_write_structs` functions on wrap up. Memory management is a big deal in C. Always write the destroy with the create, like closing a parens. 
 
-### Most of the example code has a set_jmp? Why not yours? (yet)
+### What's the deal with that extra CBridgePNG Target?
 
-A lot of example code has a chunk along the lines of: `if (setjmp(png_jmpbuf(png_ptr))) { /* DO THIS */ }`.
+A lot of libpng example code has a chunk along the lines of: `if (setjmp(png_jmpbuf(png_ptr))) { /* DO THIS */ }`.
 
 This overrides the default error handling if the file received is not a PNG file, for example. The default behaviors seem to be print statements and PNG_ABORT, from what I can tell, so it would be good to override them. However, using setjmp() and longjmp() to do that is not guaranteed to be thread safe. There is some ambiguity in the documentation (to me), but it seems as if the compiler flag to allow the setting of jumpdef is on by default because the newish "Simplified API" needs it. (It appears it was off by default in 1.4, but now is on again). Some implementations on libpng turn it off.
 
-Why hassle with this very C specific type of error handling? The setjmp saves the calling environment to be used by longjmp. This means inside the setjmp block using png_ptr, info_ptr, or even returning will all work. C callbacks, by contrast, can only use what get offered to them as parameters. 
+Why hassle with this very C specific type of error handling? It's a very fast performing way to to handle unlikely errors. In addition, `setjmp` saves the calling environment to be used by `longjmp`. This means inside the set jump block using `png_ptr`, `info_ptr`, or even returning will all work. C callbacks, by contrast, can only use what get offered to them as parameters. 
 
 Look in example code for
 - `PNG_SETJMP_NOT_SUPPORTED` in older code 
@@ -105,7 +105,7 @@ That said, to side step all of this one could use functions from the aforementio
 
 #### Why not just use custom error functions?
 
-Well, this code tries but it doesn't end up with anything that useful.
+Well, this code tries with `buildSimpleDataExample` and `writeErrorCallback` but it doesn't end up with anything that useful.
 
 Setting the error functions in the `png_create_*_struct` functions, i.e.  `(png_voidp)user_error_ptr, user_error_fn, user_warning_fn)` is not common in example code, but can be done. However, these functions STILL need to have `jmpdef`'s in them to permanently leave `libpng`'s functions so they are not a way to avoid `jmpdef`.  
 
@@ -140,6 +140,49 @@ If the user will just leave the program at this point missing a dealloc may not 
 If your callback nopes out with an `exit` or `abort`, this "Quitting behavior" will prevent being accepted into the app store. That's also no better than libpng default, so almost might as well have left it nil.
 
 the `buildSimpleDataExample` calls a working, but not super useful, callback example.
+
+#### What to do instead?
+
+The solution, more C Code. I've separated it from the `libpng` wrapper for clarity.
+
+The basic model of what I've done is to write a C function that wraps the calls to `libpng` and sets the long jump definitions accordingly. This allows for a developers-choice int to be returned if something goes wrong.
+
+```C
+int pngb_set_IHDR(png_structp png_ptr, png_infop info_ptr, png_uint_32 width, png_uint_32 height, int bit_depth, int color_type, int interlace_method, int compression_method, int filter_method) {
+    
+    if (setjmp(png_jmpbuf(png_ptr))) {
+        png_destroy_write_struct(&png_ptr, &info_ptr);
+        return 2;
+    }
+    
+    png_set_IHDR(png_ptr, info_ptr, width, height, bit_depth, color_type, interlace_method, compression_method, filter_method);
+    
+    return 0;
+}
+```
+
+A companion Swift function that throws the appropriate error:
+
+```Swift 
+    static func setIHDR(png_ptr:OpaquePointer, info_ptr:OpaquePointer, width:UInt32, height:UInt32,
+                        bitDepth:Int32, colorType:Int32) throws {
+        let result = pngb_set_IHDR(png_ptr, info_ptr, width, height, bitDepth, colorType,                     
+                                   PNG_INTERLACE_NONE,
+                                   PNG_COMPRESSION_TYPE_DEFAULT,
+                                   PNG_FILTER_TYPE_DEFAULT)
+        if result != 0 {
+            //PNGError implemented with an init that takes a code.
+            throw PNGError(result) 
+        }
+    }
+```
+
+It means: 
+- Lots of boiler plate for almost every `libpng` function call (although just the ones that can fail)
+- A performance slow down for all the extra code checking.
+- A whole separate target written in C.
+
+For an example of how this pattern works see `SwiftLIBPNG+ThrowingData.swift` and some of the callbacks defined in `SwiftLIBPNG.swift`
 
 ### Why doesn't the IDAT look like the pixels that were passed in/out of libpng?
 
