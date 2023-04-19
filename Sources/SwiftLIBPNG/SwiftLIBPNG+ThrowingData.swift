@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  SwiftLIBPNG+ThrowingData.swift
 //
 //
 //  Created by Carlyn Maw on 4/15/23.

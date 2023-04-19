@@ -2,7 +2,9 @@
 
 A lightweight wrapper around `libpng` done to learn the process of wrapping an external C library. For information on how this library was made and other "how to get it to compile" info see [META.md](META.md)
 
-So far, it compiles fine for MacOS 13+ (Swift 5.7, Xcode 14) using both Intel and M1 hardware with `libpng` installed via homebrew. 
+So far, it compiles fine for:
+ - MacOS 13+ (Swift 5.7, Xcode 14) using both Intel and M1 hardware with `libpng` installed via `homebrew`. 
+ - Ubuntu 22.04 with Swift 5.8 installed, `libpng` installed via `apt install`
 
 ## Alternatives of Note
 
