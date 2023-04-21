@@ -1,5 +1,5 @@
 //
-//  SwiftLIBPNG+SimpleReading.swift
+//  SwiftLIBPNG+ExSimpleReading.swift
 //  
 //
 //  Created by Carlyn Maw on 4/6/23.

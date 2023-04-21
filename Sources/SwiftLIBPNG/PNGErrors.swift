@@ -10,12 +10,15 @@
 enum PNGError: Error, CustomStringConvertible {
     case message(String)
     case outOfMemory
+    case badBitDepth(SwiftLIBPNG.BitDepth, SwiftLIBPNG.ColorType)
     
     public var description: String {
         switch self {
         case let .message(message): return message
         case .outOfMemory:
             return "Out of Memory"
+        case let .badBitDepth(bd, ct):
+            return "BitDepth and ColorType miss-match \(bd), \(ct)"
         }
     }
     init(_ message: String) {
