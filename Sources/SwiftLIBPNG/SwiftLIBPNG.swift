@@ -17,7 +17,13 @@ public struct SwiftLIBPNG {
     
     public init() {}
 
+    //TODO: This packages version
     public static func version() {
+        let version = png_access_version_number()
+        print(version)
+    }
+    
+    public static func libpngVersion() {
         let version = png_access_version_number()
         print(version)
     }

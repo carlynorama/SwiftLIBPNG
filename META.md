@@ -155,6 +155,53 @@ Not a high priority to fix.
 
 Related to above.
 
+
+### Linux (Ubuntu) install: Yes
+
+From fresh. 
+
+[Add Swift](https://www.swift.org/server/guides/deploying/ubuntu.html)
+```zsh
+sudo apt update
+sudo apt upgrade
+sudo apt install clang libicu-dev build-essential pkg-config
+
+mkdir ~/swift
+cd ~/swift
+# go to https://www.swift.org/download/#releases for current links
+wget https://download.swift.org/swift-5.8-release/ubuntu2004/swift-5.8-RELEASE/swift-5.8-RELEASE-ubuntu20.04.tar.gz
+tar xzf swift-5.8-RELEASE-ubuntu20.04.tar.gz #add v (xzvf) to see all files
+mv swift-5.8-RELEASE-ubuntu22.04 5.8
+# swift.org recommended choice: add a simlink to `swift` command to `/usr/bin/` 
+# instead of adding version folder to $PATH. 
+sudo ln -s ~/swift/5.8/usr/bin/swift /usr/bin/swift 
+swift --version
+```
+
+Add what we need:
+
+```zsh
+sudo apt install git 
+sudo apt install gh  #optional
+sudo apt install libpng-dev
+
+mkdir ~/Documents/GitHub
+cd ~/Documents/GitHub
+
+gh auth login #https://cli.github.com/manual/gh_auth_login
+gh repo clone carlynorama/SwiftLIBPNG
+
+#or
+git@github.com:carlynorama/SwiftLIBPNG.git
+
+cd SwiftLIBPNG
+swift build
+```
+
+
+
+
+
 ### Fake Linux (Github Action) - Not yet
 
 Higer priority to fix. 
