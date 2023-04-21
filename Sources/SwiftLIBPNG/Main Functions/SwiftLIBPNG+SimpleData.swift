@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  SwiftLIBPNG+ExSimpleData.swift
 //  
 //
 //  Created by Labtanza on 4/7/23.
@@ -14,6 +14,8 @@ import Foundation
 
 import png
 
+
+//WARNING: This code (is expected to) hard crash if something goes wrong. The callback functions only print to console and exit() the program. Not suitable for GUI applications. 
 
 extension SwiftLIBPNG {
     // EXAMPLE USAGE
@@ -57,7 +59,7 @@ extension SwiftLIBPNG {
         var pngIOBuffer = Data() //:[UInt8] = [] // //
         withUnsafePointer(to: pngIOBuffer) { print("io buffer declared: \($0)") }
         
-        var pngWriteErrorInfo = PNGErrorInfo(testExtraData: 42)
+        var pngWriteErrorInfo = PNGInfoForError(testExtraData: 42)
         
         //Make the pointer for storing the png's current state struct.
         //Using this function tells libpng to expect to handle memory management, but `png_destroy_write_struct` will still need to be called.
