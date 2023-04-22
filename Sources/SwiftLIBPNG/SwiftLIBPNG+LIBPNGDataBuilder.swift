@@ -33,6 +33,9 @@ extension SwiftLIBPNG {
         private var _data:Data = Data()
         
         private var _miscChunkPointers:[OpaquePointer] = []
+        
+        static private var testKeyWord = "Software".utf8CString
+        static private var testText = "This should be able to work just fine.".utf8CString
     
         
         //Really should force component initialization with init.
@@ -120,22 +123,20 @@ extension SwiftLIBPNG {
                             _textCChunks?.append(png_text(compression: compression.pointee, key: keyPointer, text: textPointer, text_length: length.pointee, itxt_length: 0, lang: nil, lang_key: nil))
                     
                     }
+                        
+                        
                 }
                 
-//                let count = _textChunks!.count
-//                _textChunks!.withUnsafeMutableBytes { pointer in
-//                    for index in 0..<count  {
-//                        let baseForIndex = pointer.baseAddress! + (MemoryLayout.stride(ofValue: tEXt.self) * index)
-//                        print(baseForIndex, MemoryLayout.stride(ofValue: tEXt.self))
-//                        let keyPointer = (baseForIndex + MemoryLayout<tEXt>.offset(of: \.key)!).assumingMemoryBound(to: Int8.self)
-//                        let textPointer = (baseForIndex + MemoryLayout<tEXt>.offset(of: \.value)!).assumingMemoryBound(to: Int8.self)
-//                        //let copy = _textChunks![index]
-//                        let length = (baseForIndex + MemoryLayout<tEXt>.offset(of: \.length)!).assumingMemoryBound(to: Int.self)
-//                        print(length.pointee, keyPointer.pointee, textPointer.pointee)
-//                        _textCChunks?.append(png_text(compression: PNG_TEXT_COMPRESSION_NONE, key: keyPointer, text: textPointer, text_length: length.pointee, itxt_length: 0, lang: nil, lang_key: nil))
-//
-//                    }
-//                }
+                LIBPNGDataBuilder.testKeyWord.withUnsafeBufferPointer { keywordPointer in
+                    _textCChunks!.append(png_text(compression: PNG_TEXT_COMPRESSION_NONE,
+                                                  key: &(LIBPNGDataBuilder.testKeyWord),
+                                                  text: keywordPointer.baseAddress
+                                                  text_length: LIBPNGDataBuilder.testText.count,
+                                                  itxt_length: 0, lang: nil, lang_key: nil))
+                } )
+
+                
+
                 //TODO: Confirm this doesn't abort on failure.
                 png_set_text(_ptr, _infoPtr, _textCChunks, Int32(count))
             }
