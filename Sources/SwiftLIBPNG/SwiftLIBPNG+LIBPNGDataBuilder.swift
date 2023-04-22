@@ -127,18 +127,23 @@ extension SwiftLIBPNG {
                         
                 }
                 
-                LIBPNGDataBuilder.testKeyWord.withUnsafeBufferPointer { keywordPointer in
-                    _textCChunks!.append(png_text(compression: PNG_TEXT_COMPRESSION_NONE,
-                                                  key: &(LIBPNGDataBuilder.testKeyWord),
-                                                  text: keywordPointer.baseAddress
-                                                  text_length: LIBPNGDataBuilder.testText.count,
-                                                  itxt_length: 0, lang: nil, lang_key: nil))
-                } )
-
+                let count2 = LIBPNGDataBuilder.testText.count
+                LIBPNGDataBuilder.testKeyWord.withUnsafeMutableBufferPointer { keywordPointer in
+                    LIBPNGDataBuilder.testText.withUnsafeMutableBufferPointer { textPointer in
+                        _textCChunks!.append(png_text(compression: PNG_TEXT_COMPRESSION_NONE,
+                                                      key: keywordPointer.baseAddress,
+                                                      text: textPointer.baseAddress,
+                                                      text_length: count2,
+                                                      itxt_length: 0, lang: nil, lang_key: nil))
+                    }
+                    
+                }
+                
+                print(_textCChunks)
                 
 
                 //TODO: Confirm this doesn't abort on failure.
-                png_set_text(_ptr, _infoPtr, _textCChunks, Int32(count))
+                png_set_text(_ptr, _infoPtr, _textCChunks, Int32(count+1))
             }
             
         }
