@@ -76,3 +76,16 @@ int pngb_set_write_fn(png_structrp png_ptr, png_voidp io_ptr, png_rw_ptr write_d
 //    png_set_write_status_fn(png_ptr, write_row_fn);
 //    return 0;
 //}
+
+
+png_text pngb_text(int compression, void* key, void* text, size_t text_length) {
+    png_text new_text;
+    new_text.compression = compression;
+    new_text.key = key;
+    new_text.text = text;
+    new_text.text_length = text_length;
+    new_text.itxt_length = 0;
+    new_text.lang = NULL;
+    new_text.lang_key = NULL;
+    return new_text;
+}

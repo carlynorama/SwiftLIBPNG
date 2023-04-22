@@ -14,7 +14,7 @@ import Darwin
 import Foundation
 
 import png
-import CBridgePNG
+import CShimPNG
 
 extension SwiftLIBPNG {
     public static func pngData(for pixelData:inout [UInt8], width:UInt32, height:UInt32, bitDepth:BitDepth, colorType:ColorType) throws -> Data? {

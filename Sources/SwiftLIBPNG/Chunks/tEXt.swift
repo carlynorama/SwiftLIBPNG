@@ -25,14 +25,14 @@ extension SwiftLIBPNG {
     //Right now can only do English
     struct tEXt {
         let compression:ForLibPNG
-        var key:String//ContiguousArray<CChar>
-        var value:String//[Int8]//ContiguousArray<CChar>
+        var key:ContiguousArray<CChar>
+        var value:ContiguousArray<CChar>//String//[Int8]//
         var length:Int  //
         
         init(key:String, value: String, compression:Int32 = PNG_TEXT_COMPRESSION_NONE) {
             self.compression = compression
-            self.key = key
-            self.value = value//[Int8](value.utf8CString)
+            self.key = key.utf8CString
+            self.value = value.utf8CString
             self.length = self.value.count
             
             print(self.key)

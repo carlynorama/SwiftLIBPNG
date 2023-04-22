@@ -12,7 +12,7 @@ import Darwin
 
 import Foundation
 import png
-import CBridgePNG
+import CShimPNG
 
 extension SwiftLIBPNG {
     final class LIBPNGDataBuilder {
@@ -26,9 +26,9 @@ extension SwiftLIBPNG {
         private var _pixelDataByteCount:Int
         private var _rowPointers:[Optional<UnsafeMutablePointer<UInt8>>]?
         
-        private var _textChunks:[tEXt]?
-        //private var _textChunksCPointer:Optional<UnsafeMutablePointer<png_text_struct>> = nil
-        private var _textCChunks:[png_text]?
+//        private var _textChunks:[tEXt]?
+//        //private var _textChunksCPointer:Optional<UnsafeMutablePointer<png_text_struct>> = nil
+//        private var _textCChunks:[png_text]?
         
         private var _data:Data = Data()
         
@@ -36,7 +36,7 @@ extension SwiftLIBPNG {
         
         static private var testKeyWord = "Software".utf8CString
         static private var testText = "This should be able to work just fine.".utf8CString
-    
+        
         
         //Really should force component initialization with init.
         public init?(ihdr:IHDR) {
@@ -60,7 +60,7 @@ extension SwiftLIBPNG {
                 png_destroy_write_struct(&_ptr, &_infoPtr)
                 return nil
             }
-
+            
             
             do {
                 try SwiftLIBPNG.setWriteBehavior(png_ptr: _ptr, bufferPointer: &self._data, write_callback: SwiftLIBPNG.LIBPNGDataBuilder.writeDataCallback, flush_callback: nil)
@@ -94,101 +94,196 @@ extension SwiftLIBPNG {
             typed_output_ptr.pointee.append(data_ptr, count: length)
         }
         
-        func appendTextChunk(keyword:String, value:String) throws {
-            precondition(_textCChunks == nil) // if this has been set it's too late.
-            if _textChunks == nil {
-                _textChunks = [tEXt(key: keyword, value: value)]
-            } else {
-                _textChunks!.append(tEXt(key: keyword, value: value))
-            }
-        }
+//        func appendTextChunk(keyword:String, value:String) throws {
+//            precondition(_textCChunks == nil) // if this has been set it's too late.
+//            if _textChunks == nil {
+//                _textChunks = [tEXt(key: keyword, value: value)]
+//            } else {
+//                _textChunks!.append(tEXt(key: keyword, value: value))
+//            }
+//        }
         
-        func setTextChunks() {
-            //precondition(_textCChunks == nil) // if this has been set it's too late.
-            _textCChunks = []
-            if _textChunks != nil && _textChunks?.count ?? 0 > 0 {
+        
+        
+//        func setTextChunks() {
+//            //precondition(_textCChunks == nil) // if this has been set it's too late.
+//            _textCChunks = []
+//            if _textChunks != nil && _textChunks?.count ?? 0 > 0 {
+//
+//                let count = _textChunks!.count
+//
+//
+//                for index in 0..<count  {
+//                    withUnsafeMutableBytes(of: &_textChunks![index])  { chunkPointer in
+//                        let baseForIndex = chunkPointer.baseAddress!
+//
+//                        let keyPointer = (baseForIndex + MemoryLayout<tEXt>.offset(of: \.key)!)
+//                        let textPointer = (baseForIndex + MemoryLayout<tEXt>.offset(of: \.value)!)
+//                        //let copy = _textChunks![index]
+//                        let length = (baseForIndex + MemoryLayout<tEXt>.offset(of: \.length)!).assumingMemoryBound(to: Int.self)
+//                        let compression = (baseForIndex + MemoryLayout<tEXt>.offset(of: \.compression)!).assumingMemoryBound(to: ForLibPNG.self)
+//                        print(length.pointee)
+//                        _textCChunks?.append(pngb_text(compression.pointee, keyPointer, textPointer, length.pointee))
+//
+//                    }
+//                }
+//                    //                for index in 0..<count  {
+//                    //
+//                    //
+//                    //                    pngb_text(_textChunks![index].compression, &_textChunks![index].key, &_textChunks![index].value, _textChunks![index].length)
+//                    //                }
+//
+//
+//                    let count2 = LIBPNGDataBuilder.testText.count
+//                    LIBPNGDataBuilder.testKeyWord.withUnsafeMutableBufferPointer { keywordPointer in
+//                        LIBPNGDataBuilder.testText.withUnsafeMutableBufferPointer { textPointer in
+//                            _textCChunks!.append(png_text(compression: PNG_TEXT_COMPRESSION_NONE,
+//                                                          key: keywordPointer.baseAddress,
+//                                                          text: textPointer.baseAddress,
+//                                                          text_length: count2,
+//                                                          itxt_length: 0, lang: nil, lang_key: nil))
+//                        }
+//
+//                    }
+//
+//                    print(_textCChunks)
+//
+//
+//                    //TODO: Confirm this doesn't abort on failure.
+//                    png_set_text(_ptr, _infoPtr, _textCChunks, Int32(count+1))
+//                }
+//
+//            }
+            
+            func setIDAT(pixelData: [UInt8], width:UInt32, height:UInt32) throws {
                 
-                let count = _textChunks!.count
-                
-                    for index in 0..<count  {
-                        withUnsafeMutableBytes(of: &_textChunks![index])  { chunkPointer in
-                            let baseForIndex = chunkPointer.baseAddress!
-
-                            let keyPointer = (baseForIndex + MemoryLayout<tEXt>.offset(of: \.key)!).assumingMemoryBound(to: Int8.self)
-                            let textPointer = (baseForIndex + MemoryLayout<tEXt>.offset(of: \.value)!).assumingMemoryBound(to: Int8.self)
-                        //let copy = _textChunks![index]
-                        let length = (baseForIndex + MemoryLayout<tEXt>.offset(of: \.length)!).assumingMemoryBound(to: Int.self)
-                        let compression = (baseForIndex + MemoryLayout<tEXt>.offset(of: \.compression)!).assumingMemoryBound(to: ForLibPNG.self)
-                            print(length.pointee, keyPointer.pointee, textPointer.pointee)
-                            _textCChunks?.append(png_text(compression: compression.pointee, key: keyPointer, text: textPointer, text_length: length.pointee, itxt_length: 0, lang: nil, lang_key: nil))
-                    
-                    }
-                        
-                        
+                pixelData.withUnsafeBufferPointer { pdbp in
+                    //print("\(_pixelDataByteCount), \(pdbp.count)")
+                    precondition(_pixelDataByteCount == pdbp.count)
+                    _pixelDataBase!.initialize(from: pdbp.baseAddress!, count: self._pixelDataByteCount)
                 }
                 
-                let count2 = LIBPNGDataBuilder.testText.count
-                LIBPNGDataBuilder.testKeyWord.withUnsafeMutableBufferPointer { keywordPointer in
-                    LIBPNGDataBuilder.testText.withUnsafeMutableBufferPointer { textPointer in
-                        _textCChunks!.append(png_text(compression: PNG_TEXT_COMPRESSION_NONE,
-                                                      key: keywordPointer.baseAddress,
-                                                      text: textPointer.baseAddress,
-                                                      text_length: count2,
-                                                      itxt_length: 0, lang: nil, lang_key: nil))
-                    }
-                    
-                }
+                let row_byte_width = png_get_rowbytes(_ptr, _infoPtr)
                 
-                print(_textCChunks)
-                
-
-                //TODO: Confirm this doesn't abort on failure.
-                png_set_text(_ptr, _infoPtr, _textCChunks, Int32(count+1))
-            }
-            
-        }
-        
-        func setIDAT(pixelData: [UInt8], width:UInt32, height:UInt32) throws {
-            
-            pixelData.withUnsafeBufferPointer { pdbp in
-                //print("\(_pixelDataByteCount), \(pdbp.count)")
-                precondition(_pixelDataByteCount == pdbp.count)
-                _pixelDataBase!.initialize(from: pdbp.baseAddress!, count: self._pixelDataByteCount)
-            }
-            
-            let row_byte_width = png_get_rowbytes(_ptr, _infoPtr)
-            
-            self._rowPointers = []
+                self._rowPointers = []
                 for rowIndex in 0..<height {
                     let rowStart = rowIndex * UInt32(row_byte_width)
                     _rowPointers!.append(_pixelDataBase! + Int(rowStart))
                 }
                 //print("set rows")
                 try setRows(png_ptr: _ptr, info_ptr: _infoPtr, rowPointers: &_rowPointers!)
-        }
-        
-        func writeData() throws {
-            //print("push rows")
-            try pushPNGData(png_ptr: _ptr, info_ptr: _infoPtr, transforms: PNG_TRANSFORM_IDENTITY, params: nil)
+            }
             
-        }
-        
-        func currentData() -> Data {
-            //print(_data)
-            return _data
-        }
-        
-        
-        deinit {
-            print("deinit")
-            png_destroy_write_struct(&_ptr, &_infoPtr)
-            if _pixelDataBase != nil {
-                _pixelDataBase!.deallocate()
+            func writeData() throws {
+                //print("push rows")
+                try pushPNGData(png_ptr: _ptr, info_ptr: _infoPtr, transforms: PNG_TRANSFORM_IDENTITY, params: nil)
+                
+            }
+            
+            func currentData() -> Data {
+                //print(_data)
+                return _data
+            }
+            
+            
+            deinit {
+                print("deinit")
+                png_destroy_write_struct(&_ptr, &_infoPtr)
+                if _pixelDataBase != nil {
+                    _pixelDataBase!.deallocate()
+                }
+                
             }
             
         }
-        
     }
-}
-
-
+    
+    
+    
+    
+    //Works when tEXt fields are Swift Strings
+    //func setTextChunks() {
+    //    //precondition(_textCChunks == nil) // if this has been set it's too late.
+    //    _textCChunks = []
+    //    if _textChunks != nil && _textChunks?.count ?? 0 > 0 {
+    //
+    //        let count = _textChunks!.count
+    //
+    //            for index in 0..<count  {
+    //                withUnsafeMutableBytes(of: &_textChunks![index])  { chunkPointer in
+    //                    let baseForIndex = chunkPointer.baseAddress!
+    //
+    //                    let keyPointer = (baseForIndex + MemoryLayout<tEXt>.offset(of: \.key)!).assumingMemoryBound(to: Int8.self)
+    //                    let textPointer = (baseForIndex + MemoryLayout<tEXt>.offset(of: \.value)!).assumingMemoryBound(to: Int8.self)
+    //                //let copy = _textChunks![index]
+    //                let length = (baseForIndex + MemoryLayout<tEXt>.offset(of: \.length)!).assumingMemoryBound(to: Int.self)
+    //                let compression = (baseForIndex + MemoryLayout<tEXt>.offset(of: \.compression)!).assumingMemoryBound(to: ForLibPNG.self)
+    //                    print(length.pointee, keyPointer.pointee, textPointer.pointee)
+    //                    _textCChunks?.append(png_text(compression: compression.pointee, key: keyPointer, text: textPointer, text_length: length.pointee, itxt_length: 0, lang: nil, lang_key: nil))
+    //
+    //            }
+    //
+    
+    //
+    //
+    //    func setTextChunks() {
+    //        //precondition(_textCChunks == nil) // if this has been set it's too late.
+    //        _textCChunks = []
+    //        if _textChunks != nil && _textChunks?.count ?? 0 > 0 {
+    //
+    //            let count = _textChunks!.count
+    //
+    //            for index in 0..<count  {
+    //
+    //                _textChunks![index].key.withUnsafeMutableBufferPointer { keywordPointer in
+    //                    _textChunks![index].value.withUnsafeMutableBufferPointer { textPointer in
+    //                        _textCChunks!.append(png_text(compression: item.compression,
+    //                                                      key: keywordPointer.baseAddress,
+    //                                                      text: textPointer.baseAddress,
+    //                                                      text_length: item.length,
+    //                                                      itxt_length: 0, lang: nil, lang_key: nil))
+    //                    }
+    //
+    //                }
+    //
+    //
+    //
+    //
+    //            }
+    //
+    
+    //
+    //for index in 0..<count  {
+    //    let keyCharCount = _textChunks![index].key.count
+    //    withUnsafeMutableBytes(of: &_textChunks![index])  { chunkPointer in
+    //        let baseForIndex = chunkPointer.baseAddress!
+    //
+    //        let keyPointer = UnsafeBufferPointer<CChar>(start:(baseForIndex + MemoryLayout<tEXt>.offset(of: \.key)!), count:keyCharCount)
+    //        let textPointer = (baseForIndex + MemoryLayout<tEXt>.offset(of: \.value)!).assumingMemoryBound(to: CChar)
+    //        //let copy = _textChunks![index]
+    //        let length = (baseForIndex + MemoryLayout<tEXt>.offset(of: \.length)!).assumingMemoryBound(to: Int.self)
+    //        let compression = (baseForIndex + MemoryLayout<tEXt>.offset(of: \.compression)!).assumingMemoryBound(to: ForLibPNG.self)
+    //        print(length.pointee)
+    //        _textCChunks?.append(png_text(compression: compression.pointee, key: keyPointer, text: textPointer, text_length: length.pointee, itxt_length: 0, lang: nil, lang_key: nil))
+    //
+    //    }
+    //}
+    //
+    //
+    //for index in 0..<count  {
+    //    let keyCharCount = _textChunks![index].key.count
+    //    withUnsafePointer(to: &_textChunks![index]) { chunkPointer in
+    //    //withUnsafeMutableBytes(of: &_textChunks![index])  { chunkPointer in
+    //        let baseForIndex = chunkPointer//UnsafePointer<SwiftLIBPNG.tEXt>
+    //
+    //        let keyPointer = (baseForIndex + MemoryLayout<tEXt>.offset(of: \.key)!)
+    //
+    //        let textPointer = (baseForIndex + MemoryLayout<tEXt>.offset(of: \.value)!).assumingMemoryBound(to: CChar)
+    //        //let copy = _textChunks![index]
+    //        let length = (baseForIndex + MemoryLayout<tEXt>.offset(of: \.length)!).assumingMemoryBound(to: Int.self)
+    //        let compression = (baseForIndex + MemoryLayout<tEXt>.offset(of: \.compression)!).assumingMemoryBound(to: ForLibPNG.self)
+    //        print(length.pointee)
+    //        _textCChunks?.append(png_text(compression: compression.pointee, key: keyPointer, text: textPointer, text_length: length.pointee, itxt_length: 0, lang: nil, lang_key: nil))
+    //
+    //    }
+    //}

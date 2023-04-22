@@ -27,4 +27,6 @@ int pngb_set_rows(png_structp png_ptr, png_infop info_ptr, png_bytepp row_pointe
 int pngb_write_png(png_structp png_ptr, png_infop info_ptr, int transforms, png_voidp params);
 
 
+png_text pngb_text(int compression, void* key, void* text, size_t text_length);
+
 #endif /* png_for_swift_h */

@@ -6,7 +6,7 @@ import Darwin
 
 import Foundation
 import png
-import CBridgePNG
+import CShimPNG
 
 public struct SwiftLIBPNG {
     public typealias ForLibPNG = Int32

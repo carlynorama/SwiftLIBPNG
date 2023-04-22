@@ -14,7 +14,7 @@ import Darwin
 import Foundation
 
 import png
-import CBridgePNG
+import CShimPNG
 
 
 extension SwiftLIBPNG {
