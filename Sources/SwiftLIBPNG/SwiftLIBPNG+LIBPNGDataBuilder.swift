@@ -2,7 +2,7 @@
 //  SwiftLIBPNG+LIBPNGDataBuilder.swift
 //  
 //
-//  Created by Labtanza on 4/21/23.
+//  Created by Carlyn Maw on 4/21/23.
 //
 // Notes: Can confirm, Swift strings are NOT contiguous.
 //        If you need to be able to find it again in memory you MUST allocate it yourself.
@@ -29,6 +29,7 @@ extension SwiftLIBPNG {
         private var _pixelDataByteCount:Int
         private var _rowPointers:[Optional<UnsafeMutablePointer<UInt8>>]?
         
+        //TODO: Trying to avoid saving as a pointer, failed
         //private var _textChunks:[tEXt]?
         //private var _textChunksCPointer:Optional<UnsafeMutablePointer<png_text_struct>> = nil
         private var _textCChunks:[png_text]?
@@ -38,7 +39,7 @@ extension SwiftLIBPNG {
         private var _miscChunkPointers:[OpaquePointer] = []
         
         static private var testKeyWord = "Software".utf8CString
-        static private var testText = "This should be able to work just fine.".utf8CString
+        static private var testText = "Super Fancy libpng Writer Extraordinaire.".utf8CString
         
         
         //Really should force component initialization with init.

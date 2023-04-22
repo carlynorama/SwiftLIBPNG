@@ -41,6 +41,10 @@ Testing and verification
 - Very handy PNG verifier: <https://www.nayuki.io/page/png-file-chunk-inspector>
 - "The "official" test-suite for PNG" <http://www.schaik.com/pngsuite/>
 
+### Misc PNG info
+
+- https://pyokagan.name/blog/2019-10-14-png/
+
 
 ## Notes
 

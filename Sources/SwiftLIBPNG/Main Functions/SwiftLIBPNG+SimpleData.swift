@@ -2,7 +2,7 @@
 //  SwiftLIBPNG+ExSimpleData.swift
 //  
 //
-//  Created by Labtanza on 4/7/23.
+//  Created by Carlyn Maw on 4/7/23.
 //
 #if os(Linux)
 import Glibc
