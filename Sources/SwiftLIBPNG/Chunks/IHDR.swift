@@ -51,8 +51,6 @@ extension SwiftLIBPNG {
 
 extension SwiftLIBPNG {
     
-    
-    
     public enum ColorType:ForLibPNG {
         //values of
         //isPalette (bit 1, right most),

@@ -10,11 +10,7 @@ import CBridgePNG
 
 public struct SwiftLIBPNG {
     public typealias ForLibPNG = Int32
-    
-    //http://www.libpng.org/pub/png/book/chapter08.html#png.ch08.tbl.1
-    public static let pngFileSignature:[UInt8] = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]
-    
-    
+
     public init() {}
 
     //TODO: This packages version
