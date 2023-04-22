@@ -30,13 +30,14 @@ extension SwiftLIBPNG {
         private var _rowPointers:[Optional<UnsafeMutablePointer<UInt8>>]?
         
         //TODO: Trying to avoid saving as a pointer, failed
-        //private var _textChunks:[tEXt]?
-        //private var _textChunksCPointer:Optional<UnsafeMutablePointer<png_text_struct>> = nil
+        private var _textChunks:[tEXt]?
+        //private var _textStore:[UnsafeMutableBufferPointer<Int8>]?
+        private var _textStore:[UnsafeMutableRawBufferPointer]?
+        private var _textChunksCPointer:Optional<UnsafeMutablePointer<png_text_struct>> = nil
+        
         private var _textCChunks:[png_text]?
         
         private var _data:Data = Data()
-        
-        private var _miscChunkPointers:[OpaquePointer] = []
         
         static private var testKeyWord = "Software".utf8CString
         static private var testText = "Super Fancy libpng Writer Extraordinaire.".utf8CString
@@ -98,24 +99,73 @@ extension SwiftLIBPNG {
             typed_output_ptr.pointee.append(data_ptr, count: length)
         }
         
-        //        func appendTextChunk(keyword:String, value:String) throws {
-        //            precondition(_textCChunks == nil) // if this has been set it's too late.
-        //            if _textChunks == nil {
-        //                _textChunks = [tEXt(key: keyword, value: value)]
-        //            } else {
-        //                _textChunks!.append(tEXt(key: keyword, value: value))
-        //            }
-        //        }
+        func appendTextChunk(keyword:String, value:String) {
+            precondition(_textCChunks == nil) // if this has been set it's too late.
+            if _textChunks == nil {
+                _textChunks = [tEXt(key: keyword, value: value)]
+            } else {
+                _textChunks!.append(tEXt(key: keyword, value: value))
+            }
+        }
         
-        func setTextChunks() {
+        func setTextChunks() throws {
             //precondition(_textCChunks == nil) // if this has been set it's too late.
             _textCChunks = []
+            _textStore = []
+            
+            
+            
+            for chunk in _textChunks! {
+                //TODO: Handle Null Pointer
+                let keyPointer = UnsafeMutablePointer<Int8>.allocate(capacity: chunk.key_length)
+                let keyBufferPtr = UnsafeMutableRawBufferPointer(start: keyPointer, count: chunk.key_length)
+                chunk.key.withUnsafeBytes { bytes in
+                    precondition(bytes.count == chunk.key_length)
+                    for index in 0..<chunk.key_length {
+                        keyBufferPtr[index] = bytes[index]
+                    }
+                }
+                _textStore!.append(keyBufferPtr)
+                
+                
+                
+                //TODO: Handle Null Pointer
+                let textPointer = UnsafeMutablePointer<Int8>.allocate(capacity: chunk.text_length)
+                let textBufferPtr = UnsafeMutableRawBufferPointer(start: textPointer, count: chunk.text_length)
+                chunk.value.withUnsafeBytes { bytes in
+                    precondition(bytes.count == chunk.text_length)
+                    for index in 0..<chunk.text_length {
+                        textBufferPtr[index] = bytes[index]
+                    }
+                }
+                _textStore!.append(textBufferPtr)
+                
+                
+                print("---key---")
+                for byte in keyBufferPtr {
+                    print(byte)
+                }
+                print("---value---")
+                for byte in textBufferPtr {
+                    print(byte)
+                }
+                print("---")
+                
+                
+                _textCChunks?.append(pngb_text(chunk.compression, keyBufferPtr.baseAddress, textBufferPtr.baseAddress, chunk.text_length))
+                
+                
+            }
+            
+            
             
             //Scratch code in comments at bottom of page. Was trying to avoid allocating
             //room on the heap for contiguous char arrays for the text, but apparently
             //I do need that if I'm going to break this out into its own function.
-            //Alternatively, I can use revert the single function approach and pass in a dictionary.
+            //Alternatively, I can revert the single function approach and pass in a dictionary.
+            //Another wrinkle is that libpng is demanding a mutable.
             
+            //TODO: I think I'm just getting lucky here, that the pointers still work later.
             let count2 = LIBPNGDataBuilder.testText.count
             LIBPNGDataBuilder.testKeyWord.withUnsafeMutableBufferPointer { keywordPointer in
                 LIBPNGDataBuilder.testText.withUnsafeMutableBufferPointer { textPointer in
@@ -130,8 +180,8 @@ extension SwiftLIBPNG {
             //print(_textCChunks)
             
             //TODO: png_set_text mostly warns, but aborts on catastrophic memory failure, write shim
-            //TODO: I think I'm just getting luck here, that the pointers still work?
-            png_set_text(_ptr, _infoPtr, _textCChunks, 1)
+            
+            png_set_text(_ptr, _infoPtr, _textCChunks, Int32(_textCChunks!.count))
         
         
     }
@@ -172,6 +222,15 @@ extension SwiftLIBPNG {
         png_destroy_write_struct(&_ptr, &_infoPtr)
         if _pixelDataBase != nil {
             _pixelDataBase!.deallocate()
+        }
+//        if _textStore != nil {
+//            for pointer in _textStore! {
+//                pointer.baseAddress?.deallocate()
+//            }
+//
+//        }
+        if _textChunksCPointer != nil {
+            _textChunksCPointer!.deallocate()
         }
         
     }

@@ -32,15 +32,19 @@ extension SwiftLIBPNG {
         let compression:ForLibPNG
         //when these get saved as Strings can fool you into thinking its working
         //but halfway through your string it's all like "byeeeee!" or "\uhqh389\j884fjf HAHAHA"
-        var key:ContiguousArray<CChar>
-        var value:ContiguousArray<CChar>
-        var length:Int
+        let key:ContiguousArray<CChar>
+        let value:ContiguousArray<CChar>
+        let text_length:Int
+        let key_length:Int
+        
         
         init(key:String, value: String, compression:Int32 = PNG_TEXT_COMPRESSION_NONE) {
+            precondition(key.count <= 79) //really should check C string, but fine for now.
             self.compression = compression
             self.key = key.utf8CString
             self.value = value.utf8CString
-            self.length = self.value.count // - 1 //TODO: Check this
+            self.text_length = self.value.count //- 1 //TODO: Check this
+            self.key_length = self.key.count// - 1
             
             print(self.key)
             print(self.value)

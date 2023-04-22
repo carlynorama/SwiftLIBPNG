@@ -77,12 +77,14 @@ int pngb_set_write_fn(png_structrp png_ptr, png_voidp io_ptr, png_rw_ptr write_d
 //    return 0;
 //}
 
-
-png_text pngb_text(int compression, void* key, void* text, size_t text_length) {
+//libpng wants a very specific mutable pointer type.
+//Can I get away with making one that matches.
+//TODO: Will this end up be necessary
+png_text pngb_text(int compression, void* key_ptr, void* text_ptr, size_t text_length) {
     png_text new_text;
     new_text.compression = compression;
-    new_text.key = key;
-    new_text.text = text;
+    new_text.key = key_ptr;
+    new_text.text = text_ptr;
     new_text.text_length = text_length;
     new_text.itxt_length = 0;
     new_text.lang = NULL;

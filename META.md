@@ -198,8 +198,7 @@ cd SwiftLIBPNG
 swift build
 ```
 
-
-
+If installing VScode will also need sourcekit-lsp. Discussion: <https://forums.swift.org/t/vscode-extension/29722>
 
 
 ### Fake Linux (Github Action) - Not yet

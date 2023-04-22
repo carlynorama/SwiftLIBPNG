@@ -141,7 +141,8 @@ extension SwiftLIBPNG {
     //MARK: Throwing Sub functions
     static func setIHDR(png_ptr:OpaquePointer, info_ptr:OpaquePointer, width:UInt32, height:UInt32,
                         bitDepth:Int32, colorType:Int32) throws {
-        let result = pngb_set_IHDR(png_ptr, info_ptr, width, height, bitDepth, colorType,                      PNG_INTERLACE_NONE,
+        let result = pngb_set_IHDR(png_ptr, info_ptr, width, height, bitDepth, colorType,
+                                   PNG_INTERLACE_NONE,
                                    PNG_COMPRESSION_TYPE_DEFAULT,
                                    PNG_FILTER_TYPE_DEFAULT)
         if result != 0 {
