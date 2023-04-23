@@ -13,6 +13,20 @@ If using a libpng library to avoid Apple-Hardware dependencies, also consider a 
 - <https://github.com/tayloraswift/swift-png>
 - <https://swiftpackageindex.com/rbruinier/SwiftMicroPNG>
 
+## In this repo
+
+In the source directory are 3 folders
+
+- png: holds the modulemap for including libpng exclusively. See the [META.md](META.md) for more info. 
+- CShimPNG: Some very small C wrapper functions to allow the libpng error handling to work with Swift style error handling. See the section in the Notes for more info.  (could be folded into `png` potentially)
+- SwiftLIBPNG: The real target Swift API
+
+
+### SwiftLIBPNG
+
+SwiftLIBPNG offers static functions for the creation of PNG files. Each of those functions has a file in the "Main Functions" folder. 
+
+
 ## Resources
 
 ### About libpng
@@ -79,7 +93,7 @@ The functions `libpng` provides for this come in two flavors, ones that return p
 
 Both styles of struct creation still require a call to `png_destroy_write_structs` functions on wrap up. Memory management is a big deal in C. Always write the destroy with the create, like closing a parens. 
 
-### What's the deal with that extra CBridgePNG Target?
+### What's the deal with that extra CShimPNG Target?
 
 A lot of libpng example code has a chunk along the lines of: `if (setjmp(png_jmpbuf(png_ptr))) { /* DO THIS */ }`.
 
