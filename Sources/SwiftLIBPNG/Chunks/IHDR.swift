@@ -1,13 +1,12 @@
 //
-//  File.swift
+//  IHDR.swift
 //  
 //
 //  Created by Carlyn Maw on 4/21/23.
-//
+//  http://www.libpng.org/pub/png/spec/iso/index-object.html#11IHDR
 
 import Foundation
 import png
-
 
 
 extension SwiftLIBPNG {
