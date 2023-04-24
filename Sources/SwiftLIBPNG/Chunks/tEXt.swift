@@ -25,6 +25,20 @@ import png
 
 
 extension SwiftLIBPNG {
+    //For some reason is not recognized in sub-struct
+    static func nowForCreationTime() -> String {
+        let formatter = DateFormatter()
+        if #available(macOS 13, *) {
+            formatter.timeZone = .gmt
+        } else {
+            formatter.timeZone = TimeZone(abbreviation: "GMT")
+        }
+        
+        //https://www.rfc-editor.org/rfc/rfc9110#section-5.6.7
+        //Sun, 06 Nov 1994 08:49:37 GMT    ; IMF-fixdate
+        formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss 'GMT'"
+        return formatter.string(from: Date())
+    }
     
     //Right now can only do English
     struct tEXt {

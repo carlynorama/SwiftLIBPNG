@@ -4,9 +4,8 @@
 //
 //  Created by Carlyn Maw on 4/21/23.
 //
-// Notes: Can confirm, Swift strings are NOT contiguous.
-//        If you need to be able to find it again in memory you MUST allocate it yourself.
 //
+
 #if os(Linux)
 import Glibc
 #else
@@ -107,11 +106,33 @@ extension SwiftLIBPNG {
             }
         }
         
-        func setTextChunks() throws {
-    
+        func setTextChunks(includeCreationDate:Bool = true, includeSoftware:Bool = true) throws {
+            
+            if includeCreationDate {
+                appendTextChunk(keyword: "Creation Time", value: nowForCreationTime())
+            } else {
+                if _textChunks == nil {
+                    _textChunks = []
+                }
+            }
+            
             _textCChunks = []
             if _textStore == nil {
                 _textStore = []
+            }
+            
+            if includeSoftware {
+                //TODO: I think I'm just getting lucky here, that the pointers still work later?
+                let count2 = LIBPNGDataBuilder.testText.count
+                LIBPNGDataBuilder.testKeyWord.withUnsafeMutableBufferPointer { keywordPointer in
+                    LIBPNGDataBuilder.testText.withUnsafeMutableBufferPointer { textPointer in
+                        _textCChunks!.append(png_text(compression: PNG_TEXT_COMPRESSION_NONE,
+                                                      key: keywordPointer.baseAddress,
+                                                      text: textPointer.baseAddress,
+                                                      text_length: count2,
+                                                      itxt_length: 0, lang: nil, lang_key: nil))
+                    }
+                }
             }
             
             
@@ -152,17 +173,8 @@ extension SwiftLIBPNG {
                 
             }
             
-            //TODO: I think I'm just getting lucky here, that the pointers still work later.
-            let count2 = LIBPNGDataBuilder.testText.count
-            LIBPNGDataBuilder.testKeyWord.withUnsafeMutableBufferPointer { keywordPointer in
-                LIBPNGDataBuilder.testText.withUnsafeMutableBufferPointer { textPointer in
-                    _textCChunks!.append(png_text(compression: PNG_TEXT_COMPRESSION_NONE,
-                                                  key: keywordPointer.baseAddress,
-                                                  text: textPointer.baseAddress,
-                                                  text_length: count2,
-                                                  itxt_length: 0, lang: nil, lang_key: nil))
-                }
-            }
+            
+            
             
             //TODO: png_set_text mostly warns, but aborts on catastrophic memory failure, write shim
             png_set_text(_ptr, _infoPtr, _textCChunks, Int32(_textCChunks!.count))
