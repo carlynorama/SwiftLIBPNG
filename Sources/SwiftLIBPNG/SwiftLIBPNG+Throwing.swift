@@ -59,6 +59,13 @@ extension SwiftLIBPNG {
         }
     }
     
+    static func setText(png_ptr: png_structp, info_ptr: png_infop, text_ptr: png_const_textp, num_text: Int32) throws {
+        let result = pngshim_set_text(png_ptr, info_ptr, text_ptr, num_text)
+        if result != 0 {
+            throw PNGError(result)
+        }
+    }
+    
 }
 
 

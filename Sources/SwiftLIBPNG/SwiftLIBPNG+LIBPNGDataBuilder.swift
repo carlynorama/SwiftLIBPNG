@@ -31,9 +31,8 @@ extension SwiftLIBPNG {
         private var _pixelDataByteCount:Int
         private var _rowPointers:[Optional<UnsafeMutablePointer<UInt8>>]? //do not need to be deallocated b/c not allocated.
         
-        //TODO: Trying to avoid saving as a pointer, failed
+       
         private var _textChunks:[tEXt]?
-        
         private var _textStore:[UnsafeMutablePointer<Int8>]? //each item needs a dealloc, b/c each item alloced
         private var _textCChunks:[png_text]? //While, yes a C type, I believe this is on the stack.
         
@@ -142,7 +141,6 @@ extension SwiftLIBPNG {
             //the lines of chunkBaseAddress + MemoryLayout<tEXt>.offset(of: \.value)
             //would have been okay, but I was not able to make that work.
             for chunk in _textChunks! {
-                //TODO: Handle Null Pointer
                 let keyPointer = UnsafeMutablePointer<Int8>.allocate(capacity: chunk.key_length)
                 let keyBufferPtr = UnsafeMutableRawBufferPointer(start: keyPointer, count: chunk.key_length)
                 chunk.key.withUnsafeBytes { bytes in
@@ -155,9 +153,6 @@ extension SwiftLIBPNG {
                 //stow the pointer to dealloc later.
                 _textStore!.append(keyPointer)
                 
-                
-                
-                //TODO: Handle Null Pointer
                 let textPointer = UnsafeMutablePointer<Int8>.allocate(capacity: chunk.text_length)
                 let textBufferPtr = UnsafeMutableRawBufferPointer(start: textPointer, count: chunk.text_length)
                 chunk.value.withUnsafeBytes { bytes in
@@ -177,7 +172,7 @@ extension SwiftLIBPNG {
             
             
             //TODO: png_set_text mostly warns, but aborts on catastrophic memory failure, write shim
-            png_set_text(_ptr, _infoPtr, _textCChunks, Int32(_textCChunks!.count))
+            try SwiftLIBPNG.setText(png_ptr: _ptr!, info_ptr: _infoPtr!, text_ptr: _textCChunks!, num_text: Int32(_textCChunks!.count))
         }
         
         func setIDAT(pixelData: [UInt8], width:UInt32, height:UInt32) throws {

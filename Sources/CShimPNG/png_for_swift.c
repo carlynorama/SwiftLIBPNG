@@ -19,7 +19,8 @@
 //    }
 //}
 
-
+//TODO: Make these error codes make sense.
+//TODO: Should these functions destroy the pointers? Conflict single function vs. class which deinits? Does destroy also set to null?
 
 int pngshim_set_IHDR(png_structp png_ptr, png_infop info_ptr, png_uint_32 width, png_uint_32 height, int bit_depth, int color_type, int interlace_method, int compression_method, int filter_method) {
     
@@ -76,3 +77,16 @@ int pngshim_set_write_fn(png_structrp png_ptr, png_voidp io_ptr, png_rw_ptr writ
 //    png_set_write_status_fn(png_ptr, write_row_fn);
 //    return 0;
 //}
+
+
+int pngshim_set_text(png_structp png_ptr, png_infop info_ptr, png_const_textp text_ptr, int num_text) {
+    if (setjmp(png_jmpbuf(png_ptr))) {
+        printf("set_text error");
+        //TODO: no destroy b/c only used by class for now. 
+        return 6;
+    }
+    png_set_text(png_ptr, info_ptr, text_ptr, num_text);
+    return 0;
+}
+    
+    

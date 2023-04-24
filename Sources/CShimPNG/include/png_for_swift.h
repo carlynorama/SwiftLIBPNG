@@ -26,5 +26,7 @@ int pngshim_set_rows(png_structp png_ptr, png_infop info_ptr, png_bytepp row_poi
 //Pushing to IO
 int pngshim_write_png(png_structp png_ptr, png_infop info_ptr, int transforms, png_voidp params);
 
+int pngshim_set_text(png_structp png_ptr, png_infop info_ptr, png_const_textp text_ptr, int num_text);
+
 
 #endif /* png_for_swift_h */
