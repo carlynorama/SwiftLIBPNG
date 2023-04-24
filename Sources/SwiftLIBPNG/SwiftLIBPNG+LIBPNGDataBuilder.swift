@@ -171,7 +171,7 @@ extension SwiftLIBPNG {
             
             
             
-            //TODO: png_set_text mostly warns, but aborts on catastrophic memory failure, write shim
+            //TODO: Test shim with error case
             try SwiftLIBPNG.setText(png_ptr: _ptr!, info_ptr: _infoPtr!, text_ptr: _textCChunks!, num_text: Int32(_textCChunks!.count))
         }
         
