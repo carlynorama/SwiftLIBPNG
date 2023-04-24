@@ -51,7 +51,7 @@ extension SwiftLIBPNG {
     
     //NOT using "libpng simplified API"
     //takes a width, height and pixel data in RR GG BB AA byte order
-    public static func optionalPNGForRGBAData(width:UInt32, height:UInt32, pixelData:[UInt8]) -> Data? {
+    public static func optionalPNGForRGBA(width:UInt32, height:UInt32, pixelData:[UInt8]) -> Data? {
         var pixelsCopy = pixelData //TODO: This or inout? OR... is there away around need for MutableCopy?
         let bitDepth:UInt8 = 8 //(1 byte, values 1, 2, 4, 8, or 16) (has to be 8 or 16 for RGBA)
         let colorType = PNG_COLOR_TYPE_RGBA //UInt8(6), (1 byte, values 0, 2, 3, 4, or 6) (6 == red, green, blue and alpha)

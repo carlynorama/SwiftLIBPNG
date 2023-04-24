@@ -18,7 +18,7 @@ import CShimPNG
 
 
 extension SwiftLIBPNG {
-    public static func pngForRGBAData(for pixelData:[UInt8], width:UInt32, height:UInt32, bitDepth:UInt8 = 8) throws -> Data {
+    public static func pngForRGBA(for pixelData:[UInt8], width:UInt32, height:UInt32, bitDepth:UInt8 = 8) throws -> Data {
         var pixelsCopy = pixelData //TODO: This or inout? OR... is there away around need for MutableCopy?
         let bitDepth:UInt8 = 8 //(1 byte, values 1, 2, 4, 8, or 16) (has to be 8 or 16 for RGBA)
         let colorType = PNG_COLOR_TYPE_RGBA //UInt8(6), (1 byte, values 0, 2, 3, 4, or 6) (6 == red, green, blue and alpha)
