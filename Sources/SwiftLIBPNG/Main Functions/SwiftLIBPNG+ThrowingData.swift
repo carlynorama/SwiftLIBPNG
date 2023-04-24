@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  SwiftLIBPNG+ThrowingData.swift
 //  
 //
 //  Created by Carlyn Maw on 4/21/23.
@@ -33,11 +33,8 @@ extension SwiftLIBPNG {
             }
         }
         try builder?.setTextChunks()
-        
         try builder?.setIDAT(pixelData: pixelData, width: width, height: height)
-        
         try builder?.writeData()
-        
         return builder?.currentData()
     }
 }
