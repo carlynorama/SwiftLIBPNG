@@ -40,6 +40,11 @@
 //PNG_EXPORT(25, void, png_convert_from_time_t, (png_timep ptime, time_t ttime));
 //#endif /* CONVERT_tIME */
 
+// NOTE: The time_t function returns the time since 00:00:00 UTC, January 1, 1970
+//See in Swift things like:
+//Date.timeIntervalBetween1970AndReferenceDate
+//Date(timeIntervalSince1970: )
+
 //MARK: From docs
 //http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html
 //http://www.libpng.org/pub/png/spec/iso/index-object.html#11tIME
