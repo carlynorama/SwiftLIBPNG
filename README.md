@@ -8,7 +8,9 @@ So far, it compiles fine for:
 
 ## Alternatives of Note
 
-If using a libpng library to avoid Apple-Hardware dependencies, also consider a Package that is all Swift, no C, no Foundation? As of 2023 APR these two had fairly recent activity. 
+This package is a learning project, not a production product.
+
+If searching for png library that isn't limited to Apple-Hardware dependencies, also consider a Package that is all Swift, no C, no Foundation? As of 2023 APR these two had fairly recent activity. 
 
 - <https://github.com/tayloraswift/swift-png>
 - <https://swiftpackageindex.com/rbruinier/SwiftMicroPNG>
@@ -26,6 +28,29 @@ In the source directory are 3 folders
 
 SwiftLIBPNG offers static functions for the creation of PNG files. Each of those functions has a file in the "Main Functions" folder. 
 
+#### SwiftLIBPNG+SimpleData
+
+- `public static func optionalPNGDataForRGBA(width:UInt32, height:UInt32, pixelData:[UInt8]) -> Data?`
+
+Non-throwing, but libpng will crash the program if there is a fatal error. Uses a function & required Data creation callback to create a Data blob with properly PNG data. Can then be used to save to a file with no changes. As an experiment, uses Swift error callback functions... to reproduce the same crashing behavior that libpng does.  
+
+#### SwiftLIBPNG+SimpleReading
+
+- `public static func simpleFileRead(from path:String) throws -> [UInt8]`
+
+Throws, but only based on initial file missing/no memory errors. libpng will crash the program if there is a fatal error later. Uses a single function and optional current-status callback to open a file and return an uncompressed UInt8 array of pixel data. As currently written it is up to the user to know ahead of time what kind of data that will be, although the header information is printed to the console. 
+
+#### SwiftLIBPNG+SimpleThrowingData
+
+- `public static func pngForRGBA(for pixelData:[UInt8], width:UInt32, height:UInt32, bitDepth:UInt8 = 8)`
+
+Like `optionalPNGForRGBAData`, a single function again. Instead of aborting or returning nil, it uses sub-functions defined in `CShimPNG` and `SwiftLIBPNG+Throwing` to make a program that doesn't crash, even when there is a fatal error caught by `libpng`.
+
+#### SwiftLIBPNG+ThrowingData
+
+- `public static func pngData(for pixelData:[UInt8], width:UInt32, height:UInt32, bitDepth:BitDepth, colorType:ColorType, metaInfo:Dictionary<String, String>? = nil) throws -> Data?`
+
+Uses a `LIBPNGDataBuilder` class to reproduce `pngForRGBAData` for any non-palletized data pixel data. Adds uncompressed text info to PNG: User submitted, a "Creation Date" and "Software"
 
 ## Resources
 
@@ -38,7 +63,9 @@ Although some people will tell you that PNG stands for Portable Network Graphic,
 - More up to date than /book/ but still seems to lag :<http://www.libpng.org/pub/png/libpng-manual.txt> 
 - Actual most recent: https://github.com/glennrp/libpng/
 
-- 'just the spec ma'am' - <https://www.w3.org/TR/2003/REC-PNG-20031110/>, <https://w3c.github.io/PNG-spec/>
+- 'just the spec ma'am' 
+    - <https://www.w3.org/TR/2003/REC-PNG-20031110/>
+    - <https://w3c.github.io/PNG-spec/>
 - zlib spec for analyzing IDAT <https://www.zlib.net/manual.html>
 
 ### Inspecting Data
@@ -57,7 +84,7 @@ Testing and verification
 
 ### Misc PNG info
 
-- https://pyokagan.name/blog/2019-10-14-png/
+- <https://pyokagan.name/blog/2019-10-14-png/>
 
 
 ## Notes
@@ -279,7 +306,7 @@ What the actual mask values are from `png.h`
  
  Most users of `libpng` will not need to fiddle with these settings, but its helpful to know why the data doesn't match what its given by default. 
 
-### Why does the writing example use Data instead of [UInt8]?
+### Why does the PNG writing example use Data instead of [UInt8]?
 
 When trying to write cross-platform code, I tend to try to use the lowest level type as much as possible to move information around. In this case using a `[UInt8]` over a `Data` would cost so much additional overhead, it's not currently worth the hassle. 
 
