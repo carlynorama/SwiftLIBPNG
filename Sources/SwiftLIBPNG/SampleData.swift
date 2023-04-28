@@ -14,6 +14,9 @@
 
 
 extension SwiftLIBPNG {
+    //http://www.libpng.org/pub/png/book/chapter08.html#png.ch08.tbl.1
+    public static let pngFileSignature:[UInt8] = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]
+    
     //These two items should be save-able as PNGs
     public static let png_data_small_transparent_full = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, //file signature
                                               0x00, 0x00, 0x00, 0x0d, //size of IDHR (always 13)

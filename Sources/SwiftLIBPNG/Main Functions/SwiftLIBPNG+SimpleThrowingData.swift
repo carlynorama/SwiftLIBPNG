@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  SwiftLIBPNG+ExThrowingData.swift
 //
 //
 //  Created by Carlyn Maw on 4/15/23.
@@ -14,11 +14,11 @@ import Darwin
 import Foundation
 
 import png
-import CBridgePNG
+import CShimPNG
 
 
 extension SwiftLIBPNG {
-    public static func pngData(for pixelData:[UInt8], width:UInt32, height:UInt32) throws -> Data {
+    public static func pngForRGBA(for pixelData:[UInt8], width:UInt32, height:UInt32, bitDepth:UInt8 = 8) throws -> Data {
         var pixelsCopy = pixelData //TODO: This or inout? OR... is there away around need for MutableCopy?
         let bitDepth:UInt8 = 8 //(1 byte, values 1, 2, 4, 8, or 16) (has to be 8 or 16 for RGBA)
         let colorType = PNG_COLOR_TYPE_RGBA //UInt8(6), (1 byte, values 0, 2, 3, 4, or 6) (6 == red, green, blue and alpha)
@@ -79,43 +79,8 @@ extension SwiftLIBPNG {
         return pngIOBuffer
     }
     
-    static func setIHDR(png_ptr:OpaquePointer, info_ptr:OpaquePointer, width:UInt32, height:UInt32,
-                        bitDepth:Int32, colorType:Int32) throws {
-        let result = pngb_set_IHDR(png_ptr, info_ptr, width, height, bitDepth, colorType,                      PNG_INTERLACE_NONE,
-                                   PNG_COMPRESSION_TYPE_DEFAULT,
-                                   PNG_FILTER_TYPE_DEFAULT)
-        if result != 0 {
-            throw PNGError(result)
-        }
-    }
+
     
-    static func setRows(png_ptr:OpaquePointer?, info_ptr:OpaquePointer?, rowPointers:png_bytepp?) throws {
-        let result = pngb_set_rows(png_ptr, info_ptr, rowPointers)
-        if result != 0 {
-            throw PNGError(result)
-        }
-    }
-    
-    static func pushPNGData(png_ptr:OpaquePointer?, info_ptr:OpaquePointer?, transforms:Int32, params:Optional<UnsafeMutableRawPointer> = nil) throws {
-        let result = pngb_write_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, params)
-        if result != 0 {
-            throw PNGError(result)
-        }
-    }
-    
-    //Needs Cleanup because underlying libpng function does not take in info_ptr and
-    //info ptr is need for destroy.
-    static func setWriteBehavior(
-        png_ptr:OpaquePointer?,
-        bufferPointer:Optional<UnsafeMutableRawPointer>,
-        write_callback:@convention(c) (Optional<OpaquePointer>, Optional<UnsafeMutablePointer<UInt8>>, Int) -> Void,
-        flush_callback:Optional<@convention(c) (Optional<OpaquePointer>) -> ()>
-    ) throws {
-        let result = pngb_set_write_fn(png_ptr, bufferPointer, write_callback, flush_callback)
-        if result != 0 {
-            throw PNGError(result)
-        }
-    }
     
     //Needs Cleanup
     //Uncessary because underlying libpng function does not jump.

@@ -1,8 +1,8 @@
 //
-//  File.swift
+//  SwiftLIBPNG+ExSimpleData.swift
 //  
 //
-//  Created by Labtanza on 4/7/23.
+//  Created by Carlyn Maw on 4/7/23.
 //
 #if os(Linux)
 import Glibc
@@ -14,6 +14,8 @@ import Foundation
 
 import png
 
+
+//WARNING: This code (is expected to) hard crash if something goes wrong. The callback functions only print to console and exit() the program. Not suitable for GUI applications. 
 
 extension SwiftLIBPNG {
     // EXAMPLE USAGE
@@ -49,7 +51,7 @@ extension SwiftLIBPNG {
     
     //NOT using "libpng simplified API"
     //takes a width, height and pixel data in RR GG BB AA byte order
-    public static func buildSimpleDataExample(width:UInt32, height:UInt32, pixelData:[UInt8]) throws -> Data {
+    public static func optionalPNGForRGBA(width:UInt32, height:UInt32, pixelData:[UInt8]) -> Data? {
         var pixelsCopy = pixelData //TODO: This or inout? OR... is there away around need for MutableCopy?
         let bitDepth:UInt8 = 8 //(1 byte, values 1, 2, 4, 8, or 16) (has to be 8 or 16 for RGBA)
         let colorType = PNG_COLOR_TYPE_RGBA //UInt8(6), (1 byte, values 0, 2, 3, 4, or 6) (6 == red, green, blue and alpha)
@@ -57,7 +59,7 @@ extension SwiftLIBPNG {
         var pngIOBuffer = Data() //:[UInt8] = [] // //
         withUnsafePointer(to: pngIOBuffer) { print("io buffer declared: \($0)") }
         
-        var pngWriteErrorInfo = PNGErrorInfo(testExtraData: 42)
+        var pngWriteErrorInfo = PNGInfoForError(testExtraData: 42)
         
         //Make the pointer for storing the png's current state struct.
         //Using this function tells libpng to expect to handle memory management, but `png_destroy_write_struct` will still need to be called.
@@ -69,14 +71,14 @@ extension SwiftLIBPNG {
          warn_fn: png_error_ptr!  (png_structp?, png_const_charp?) -> Void)
          */
         var png_ptr:OpaquePointer? = png_create_write_struct(PNG_LIBPNG_VER_STRING, &pngWriteErrorInfo, writeErrorCallback, writeWarningCallback)
-        if (png_ptr == nil) { throw PNGError.outOfMemory }
+        if (png_ptr == nil) { return nil }
         
         //Makes the pointer to handle information about how the underlying PNG data needs to be manipulated.
         //C:-- png_create_info_struct(png_const_structrp!)
         var info_ptr:OpaquePointer? = png_create_info_struct(png_ptr);
         if (info_ptr == nil) {
             png_destroy_write_struct(&png_ptr, nil);
-            throw PNGError.outOfMemory;
+            return nil
         }
         
         pngWriteErrorInfo.fileHandle = nil

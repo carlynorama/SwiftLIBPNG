@@ -19,9 +19,10 @@
 //    }
 //}
 
+//TODO: Make these error codes make sense.
+//TODO: Should these functions destroy the pointers? Conflict single function vs. class which deinits? Does destroy also set to null?
 
-
-int pngb_set_IHDR(png_structp png_ptr, png_infop info_ptr, png_uint_32 width, png_uint_32 height, int bit_depth, int color_type, int interlace_method, int compression_method, int filter_method) {
+int pngshim_set_IHDR(png_structp png_ptr, png_infop info_ptr, png_uint_32 width, png_uint_32 height, int bit_depth, int color_type, int interlace_method, int compression_method, int filter_method) {
     
     if (setjmp(png_jmpbuf(png_ptr))) {
         png_destroy_write_struct(&png_ptr, &info_ptr);
@@ -33,7 +34,7 @@ int pngb_set_IHDR(png_structp png_ptr, png_infop info_ptr, png_uint_32 width, pn
     return 0;
 }
 
-int pngb_set_rows(png_structp png_ptr, png_infop info_ptr, png_bytepp row_pointers) {
+int pngshim_set_rows(png_structp png_ptr, png_infop info_ptr, png_bytepp row_pointers) {
     
     if (setjmp(png_jmpbuf(png_ptr))) {
         printf("set rows error");
@@ -45,20 +46,21 @@ int pngb_set_rows(png_structp png_ptr, png_infop info_ptr, png_bytepp row_pointe
     return 0;
 }
 
-int pngb_write_png(png_structp png_ptr, png_infop info_ptr, int transforms, png_voidp params) {
+int pngshim_write_png(png_structp png_ptr, png_infop info_ptr, int transforms, png_voidp params) {
     if (setjmp(png_jmpbuf(png_ptr))) {
         printf("write_png error");
         png_destroy_write_struct(&png_ptr, &info_ptr);
         return 4;
     }
     png_write_png(png_ptr, info_ptr, transforms, params);
+    return 0;
 }
 
 
 
 //TODO: calls png_warning but never png_error
 //https://github.com/glennrp/libpng/pngwio.c
-int pngb_set_write_fn(png_structrp png_ptr, png_voidp io_ptr, png_rw_ptr write_data_fn, png_flush_ptr output_flush_fn) {
+int pngshim_set_write_fn(png_structrp png_ptr, png_voidp io_ptr, png_rw_ptr write_data_fn, png_flush_ptr output_flush_fn) {
     if (setjmp(png_jmpbuf(png_ptr))) {
         printf("write_png error");
         return 5;
@@ -75,3 +77,16 @@ int pngb_set_write_fn(png_structrp png_ptr, png_voidp io_ptr, png_rw_ptr write_d
 //    png_set_write_status_fn(png_ptr, write_row_fn);
 //    return 0;
 //}
+
+
+int pngshim_set_text(png_structp png_ptr, png_infop info_ptr, png_const_textp text_ptr, int num_text) {
+    if (setjmp(png_jmpbuf(png_ptr))) {
+        printf("set_text error");
+        //TODO: no destroy b/c only used by class for now. 
+        return 6;
+    }
+    png_set_text(png_ptr, info_ptr, text_ptr, num_text);
+    return 0;
+}
+    
+    
