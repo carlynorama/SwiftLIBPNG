@@ -28,11 +28,17 @@ extension SwiftLIBPNG {
     //For some reason is not recognized in sub-struct
     static func nowForCreationTime() -> String {
         let formatter = DateFormatter()
+
+#if os(Linux)
+        formatter.timeZone = TimeZone(abbreviation: "GMT")
+#else
         if #available(macOS 13, *) {
             formatter.timeZone = .gmt
         } else {
             formatter.timeZone = TimeZone(abbreviation: "GMT")
         }
+#endif
+    
         
         //https://www.rfc-editor.org/rfc/rfc9110#section-5.6.7
         //Sun, 06 Nov 1994 08:49:37 GMT    ; IMF-fixdate
