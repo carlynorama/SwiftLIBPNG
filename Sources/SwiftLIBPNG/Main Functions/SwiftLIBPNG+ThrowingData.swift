@@ -17,7 +17,14 @@ import png
 import CShimPNG
 
 extension SwiftLIBPNG {
-    public static func pngData(for pixelData:[UInt8], width:UInt32, height:UInt32, bitDepth:BitDepth, colorType:ColorType, metaInfo:Dictionary<String, String>? = nil) throws -> Data? {
+    public static func pngData(
+            for pixelData:[UInt8], 
+            width:UInt32, 
+            height:UInt32, 
+            bitDepth:BitDepth, 
+            colorType:ColorType, 
+            metaInfo:Dictionary<String, String>? = nil
+        ) throws -> Data? {
         
         precondition(colorType != .palletized) //cannot handle that yet.
 
