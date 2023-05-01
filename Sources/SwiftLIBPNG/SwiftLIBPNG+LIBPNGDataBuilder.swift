@@ -216,7 +216,6 @@ extension SwiftLIBPNG {
                 for pointer in _textStore! {
                     pointer.deallocate()
                 }
-                
             }
         }
     }
