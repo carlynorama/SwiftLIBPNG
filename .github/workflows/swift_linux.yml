@@ -18,7 +18,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install libpng
-        run: apt-get install libpng-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install libpng-dev
       - name: Build Linux framework
         run: |
            swift build
