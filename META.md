@@ -225,18 +225,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Install sudo package
+        run: apt update && apt install sudo
       - name: Install libpng
-        run: sudo apt-get install libpng-dev
-      - name: Build Linux framework
+        run: |
+          sudo apt-get install libpng-dev -y
+      - name: Build and Test
         run: |
            swift build
            swift test
-      - name: Build Linux Demo
-        run: |
-            cd Demo/Demo\ Ubuntu
-            swift build
 ```
-
-This one fails with `warning: you may be able to install libpng using your system-packager:apt-get install libpng-dev`
-- TODO: figure out how to make one that works. (may also have to install pkg-config)
 
