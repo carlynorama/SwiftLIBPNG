@@ -21,7 +21,7 @@ jobs:
         run: apt update && apt install sudo
       - name: Install libpng
         run: |
-          sudo apt-get install libpng-dev
+          sudo apt-get install libpng-dev -y
       - name: Build Linux framework
         run: |
            swift build
