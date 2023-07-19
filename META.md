@@ -201,9 +201,7 @@ swift build
 If installing VScode will also need sourcekit-lsp. Discussion: <https://forums.swift.org/t/vscode-extension/29722>
 
 
-### Fake Linux (Github Action) - Not yet
-
-Higher priority to fix. 
+### Fake Linux (Github Action)
 
 Use action like one checking [APITizer](https://github.com/carlynorama/APItizer/actions)
 
