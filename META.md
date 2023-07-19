@@ -236,3 +236,6 @@ jobs:
            swift test
 ```
 
+TODO: Cache the image with libpng? 
+- https://stackoverflow.com/questions/57982945/how-to-apt-get-install-in-a-github-actions-workflow
+- https://stackoverflow.com/questions/59269850/caching-apt-packages-in-github-actions-workflow/73500415#73500415
