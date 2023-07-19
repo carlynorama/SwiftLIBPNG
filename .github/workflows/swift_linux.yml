@@ -22,11 +22,7 @@ jobs:
       - name: Install libpng
         run: |
           sudo apt-get install libpng-dev -y
-      - name: Build Linux framework
+      - name: Build and Test
         run: |
            swift build
            swift test
-      - name: Build Linux Demo
-        run: |
-            cd Demo/Demo\ Ubuntu
-            swift build
